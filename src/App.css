@@ -4,7 +4,7 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: #f0f0f0;
+  background-color: #232323;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -12,8 +12,8 @@
 }
 
 .splash-logo {
-  width: 200px;
-  height: 200px;
+  width: 315px;
+  height: 216px;
   opacity: 0.8;
   transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
 }
