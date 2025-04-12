@@ -1,79 +1,71 @@
 import * as THREE from 'three';
+import { Controls } from '../types';
 
-export type ShaderUniforms = {
-    // Time and animation
-    u_time: { value: number };
-    u_speed: { value: number };
+// Uniform types
+interface BaseUniforms {
+    [key: string]: THREE.IUniform<any>;
+    u_time: THREE.IUniform<number>;
+    u_mode: THREE.IUniform<number>;
+}
 
-    // Geometry and transformation
-    u_scale: { value: number };
-    u_posX: { value: number };
-    u_posY: { value: number };
-    u_posZ: { value: number };
+interface MeshUniforms {
+    [key: string]: THREE.IUniform<any>;
+    u_effectType: THREE.IUniform<number>;
+    u_sdfType: THREE.IUniform<number>;
+    u_scale: THREE.IUniform<number>;
+    u_posX: THREE.IUniform<number>;
+    u_posY: THREE.IUniform<number>;
+    u_posZ: THREE.IUniform<number>;
+    u_color: THREE.IUniform<THREE.Color>;
+    u_thickness: THREE.IUniform<number>;
+    u_effectStrength: THREE.IUniform<number>;
+    u_contrast: THREE.IUniform<number>;
+}
 
-    // Material and effects
-    u_color: { value: THREE.Color };
-    u_thickness: { value: number };
-    u_effectStrength: { value: number };
-    u_contrast: { value: number };
+interface RaymarchUniforms {
+    [key: string]: THREE.IUniform<any>;
+    u_resolution: THREE.IUniform<THREE.Vector2>;
+    u_cameraPos: THREE.IUniform<THREE.Vector3>;
+    u_raymarchSteps: THREE.IUniform<number>;
+    u_raymarchEpsilon: THREE.IUniform<number>;
+    u_count: THREE.IUniform<number>;
+    u_size_x: THREE.IUniform<number>;
+    u_size_y: THREE.IUniform<number>;
+    u_size_z: THREE.IUniform<number>;
+    u_sdf_thickness: THREE.IUniform<number>;
+    u_bias: THREE.IUniform<number>;
+    u_drop_yz: THREE.IUniform<number>;
+    u_drop_zx: THREE.IUniform<number>;
+    u_drop_xy: THREE.IUniform<number>;
+    u_variantIndex: THREE.IUniform<number>;
+}
 
-    // Mode and type controls
-    u_mode: { value: number };
-    u_effectType: { value: number };
-    u_sdfType: { value: number };
+export interface ShaderUniforms extends BaseUniforms, MeshUniforms, RaymarchUniforms {
+    [key: string]: THREE.IUniform<any>;
+}
 
-    // Raymarching specific
-    u_resolution: { value: THREE.Vector2 };
-    u_cameraPos: { value: THREE.Vector3 };
-    u_raymarchSteps: { value: number };
-    u_raymarchEpsilon: { value: number };
-
-    // SDF parameters
-    u_count: { value: number };
-    u_size_x: { value: number };
-    u_size_y: { value: number };
-    u_size_z: { value: number };
-    u_sdf_thickness: { value: number };
-    u_bias: { value: number };
-    u_drop_yz: { value: number };
-    u_drop_zx: { value: number };
-    u_drop_xy: { value: number };
-    u_variantIndex: { value: number };
-};
-
-export const createUniforms = (
-    controls: any,
-    size: { width: number; height: number },
-    camera: THREE.Camera
-): ShaderUniforms => ({
-    // Time and animation
+export const createUniforms = (controls: Controls, size: { width: number, height: number }, camera: THREE.Camera): ShaderUniforms => ({
+    // Base uniforms
     u_time: { value: 0 },
-    u_speed: { value: controls.speed },
+    u_mode: { value: controls.mode === 'Raymarching' ? 0 : 1 },
 
-    // Geometry and transformation
+    // Mesh uniforms
+    u_effectType: { value: controls.effectType === 'Bump' ? 0 : 1 },
+    u_sdfType: { value: ['Gyroid', 'Sphere', 'Box', 'Torus', 'Waves'].indexOf(controls.sdfType) },
     u_scale: { value: controls.scale },
     u_posX: { value: controls.posX },
     u_posY: { value: controls.posY },
     u_posZ: { value: controls.posZ },
-
-    // Material and effects
     u_color: { value: new THREE.Color(controls.color) },
     u_thickness: { value: controls.thickness },
     u_effectStrength: { value: controls.effectStrength },
     u_contrast: { value: controls.contrast },
 
-    // Mode and type controls
-    u_mode: { value: controls.mode === 'Raymarching' ? 0 : 1 },
-    u_effectType: { value: controls.effectType === 'Bump' ? 0 : 1 },
-    u_sdfType: { value: ['Gyroid', 'Sphere', 'Box', 'Torus', 'Waves'].indexOf(controls.sdfType) },
-
-    // Raymarching specific
+    // Raymarching uniforms
     u_resolution: { value: new THREE.Vector2(size.width, size.height) },
-    u_cameraPos: { value: new THREE.Vector3().copy(camera.position) },
+    u_cameraPos: { value: camera.position },
     u_raymarchSteps: { value: controls.raymarchSteps },
     u_raymarchEpsilon: { value: controls.raymarchEpsilon },
-
-    // SDF parameters
     u_count: { value: controls.count },
     u_size_x: { value: controls.size_x },
     u_size_y: { value: controls.size_y },
@@ -83,5 +75,5 @@ export const createUniforms = (
     u_drop_yz: { value: controls.drop_yz },
     u_drop_zx: { value: controls.drop_zx },
     u_drop_xy: { value: controls.drop_xy },
-    u_variantIndex: { value: controls.variantIndex },
+    u_variantIndex: { value: controls.variantIndex }
 });

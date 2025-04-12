@@ -1,18 +1,22 @@
+import { RenderMode, EffectType, SDFType } from './types';
+
+export type LevaControls = ReturnType<typeof createControls>;
+
 export const createControls = () => {
-    return {
+    const controls = {
         // Mode and type controls
         mode: {
-            value: 'Mesh' as 'Raymarching' | 'Mesh',
-            options: ['Raymarching', 'Mesh'] as const,
+            value: 'Mesh' as RenderMode,
+            options: ['Raymarching', 'Mesh'] as RenderMode[],
         },
         effectType: {
-            value: 'Displacement' as 'Bump' | 'Displacement',
-            options: ['Bump', 'Displacement'],
+            value: 'Displacement' as EffectType,
+            options: ['Bump', 'Displacement'] as EffectType[],
             render: (get: any) => get('mode') === 'Mesh'
         },
         sdfType: {
-            value: 'Gyroid' as 'Gyroid' | 'Sphere' | 'Box' | 'Torus' | 'Waves',
-            options: ['Gyroid', 'Sphere', 'Box', 'Torus', 'Waves'] as const,
+            value: 'Gyroid' as SDFType,
+            options: ['Gyroid', 'Sphere', 'Box', 'Torus', 'Waves'] as SDFType[],
             render: (get: any) => get('mode') === 'Mesh'
         },
 
@@ -103,5 +107,7 @@ export const createControls = () => {
             value: 0, min: 0, max: 4, step: 1,
             render: (get: any) => get('mode') === 'Raymarching'
         }
-    };
+    } as const;
+
+    return controls;
 };

@@ -1,23 +1,42 @@
 export default `
+    // Constants and basic types
     #define STANDALONE 0
     #define PI 3.14159265358979
     #define SQRT2 1.41421356237
     #define SQRT3 1.73205080757
 
+    struct Implicit {
+        float Distance;
+        vec3 Gradient;
+    };
+
+    struct ColorImplicit {
+        float Distance;
+        vec3 Gradient;
+        vec4 Color;
+    };
+
+    // Base uniforms
     uniform float u_time;
     uniform vec2 u_resolution;
+    uniform int u_mode;
+
+    // Mesh mode uniforms
     uniform vec3 u_color;
     uniform float u_thickness;
-    uniform int u_mode;
     uniform int u_effectType;
     uniform int u_sdfType;
     uniform float u_effectStrength;
     uniform float u_contrast;
-    uniform float u_speed;
     uniform float u_scale;
     uniform float u_posX;
     uniform float u_posY;
     uniform float u_posZ;
+
+    // Raymarching mode uniforms
+    uniform vec3 u_cameraPos;
+    uniform float u_raymarchSteps;
+    uniform float u_raymarchEpsilon;
     uniform float u_count;
     uniform float u_size_x;
     uniform float u_size_y;
@@ -29,6 +48,7 @@ export default `
     uniform float u_drop_xy;
     uniform int u_variantIndex;
 
+    // Varyings
     varying vec3 vNormal;
     varying vec3 vPosition;
     varying vec3 vWorldPosition;
@@ -65,7 +85,7 @@ export default `
     // Mesh mode SDF function
     float mapSdf(vec3 p) {
         // Apply time-based animation
-        float timeOffset = u_time * u_speed;
+        float timeOffset = u_time * 0.0;
         p.x += sin(timeOffset) * 0.2;
         p.y += cos(timeOffset) * 0.2;
 
@@ -88,17 +108,6 @@ export default `
     }
 
     // Raymarching mode structures and functions
-    struct Implicit {
-        float Distance;
-        vec3 Gradient;
-    };
-
-    struct ColorImplicit {
-        float Distance;
-        vec3 Gradient;
-        vec4 Color;
-    };
-
     // Forward declarations
     Implicit map(vec3 p);
 
@@ -981,10 +990,10 @@ export default `
 
     // Tree root
     Implicit map(vec3 p) {
-    #if (STANDALONE==0)
-        float time = u_time;
-        vec2 resolution = u_resolution;
-    #endif
+        #if (STANDALONE==0)
+            float time = u_time;
+            vec2 resolution = u_resolution;
+        #endif
 
         float amp = 0.05;
         vec3 pOrig = p * vec3(1. + amp * cos(time), 1. + amp * cos(time), 1. + amp * sin(time));

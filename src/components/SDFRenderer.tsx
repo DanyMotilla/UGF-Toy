@@ -2,8 +2,9 @@ import { useRef } from 'react';
 import * as THREE from 'three';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useControls } from 'leva';
-import { ShaderUniforms, createUniforms } from './shaders/uniforms';
+import { createUniforms } from './shaders/uniforms';
 import { createControls } from './controls';
+import { Controls } from './types';
 import vertexShader from './shaders/vertex.ts';
 import fragmentShader from './shaders/fragment.ts';
 
@@ -11,8 +12,8 @@ const SDFRenderer = () => {
     const meshRef = useRef<THREE.Mesh>(null);
     const materialRef = useRef<THREE.ShaderMaterial>(null);
     const { size, camera } = useThree();
-    const controls = useControls(createControls());
-    const uniforms = useRef<ShaderUniforms>(createUniforms(controls, size, camera)).current;
+    const controls = useControls(createControls()) as unknown as Controls;
+    const uniforms = useRef<{ [key: string]: THREE.IUniform<any> }>(createUniforms(controls, size, camera)).current;
 
     useFrame(({ clock }) => {
         if (!materialRef.current) return;
