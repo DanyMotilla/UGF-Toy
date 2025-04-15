@@ -4,6 +4,270 @@ export default `
     #define PI 3.14159265358979
     #define SQRT2 1.41421356237
     #define SQRT3 1.73205080757
+    
+    vec3[256] breezeValues = vec3[](
+vec3(0.0276, 0.0829, 0.1149),
+vec3(0.0351, 0.0907, 0.1266),
+vec3(0.0431, 0.0983, 0.1384),
+vec3(0.0511, 0.1058, 0.1502),
+vec3(0.0588, 0.1133, 0.1621),
+vec3(0.0664, 0.1206, 0.1740),
+vec3(0.0738, 0.1279, 0.1861),
+vec3(0.0811, 0.1351, 0.1982),
+vec3(0.0882, 0.1422, 0.2104),
+vec3(0.0952, 0.1493, 0.2227),
+vec3(0.1021, 0.1563, 0.2350),
+vec3(0.1089, 0.1633, 0.2475),
+vec3(0.1155, 0.1703, 0.2600),
+vec3(0.1220, 0.1772, 0.2725),
+vec3(0.1283, 0.1841, 0.2852),
+vec3(0.1346, 0.1910, 0.2979),
+vec3(0.1406, 0.1979, 0.3107),
+vec3(0.1465, 0.2048, 0.3235),
+vec3(0.1523, 0.2117, 0.3363),
+vec3(0.1578, 0.2186, 0.3492),
+vec3(0.1632, 0.2255, 0.3621),
+vec3(0.1683, 0.2325, 0.3750),
+vec3(0.1733, 0.2395, 0.3879),
+vec3(0.1779, 0.2466, 0.4008),
+vec3(0.1823, 0.2537, 0.4137),
+vec3(0.1865, 0.2609, 0.4266),
+vec3(0.1903, 0.2682, 0.4394),
+vec3(0.1937, 0.2755, 0.4522),
+vec3(0.1969, 0.2829, 0.4650),
+vec3(0.1997, 0.2905, 0.4777),
+vec3(0.2021, 0.2981, 0.4903),
+vec3(0.2042, 0.3057, 0.5028),
+vec3(0.2060, 0.3135, 0.5152),
+vec3(0.2074, 0.3214, 0.5275),
+vec3(0.2084, 0.3293, 0.5396),
+vec3(0.2091, 0.3373, 0.5516),
+vec3(0.2093, 0.3454, 0.5635),
+vec3(0.2092, 0.3536, 0.5751),
+vec3(0.2087, 0.3618, 0.5866),
+vec3(0.2079, 0.3701, 0.5979),
+vec3(0.2066, 0.3785, 0.6089),
+vec3(0.2050, 0.3870, 0.6197),
+vec3(0.2030, 0.3955, 0.6303),
+vec3(0.2005, 0.4040, 0.6406),
+vec3(0.1977, 0.4127, 0.6506),
+vec3(0.1946, 0.4213, 0.6603),
+vec3(0.1911, 0.4300, 0.6697),
+vec3(0.1872, 0.4388, 0.6788),
+vec3(0.1830, 0.4476, 0.6875),
+vec3(0.1785, 0.4564, 0.6959),
+vec3(0.1738, 0.4652, 0.7039),
+vec3(0.1688, 0.4740, 0.7115),
+vec3(0.1637, 0.4829, 0.7187),
+vec3(0.1584, 0.4917, 0.7255),
+vec3(0.1530, 0.5006, 0.7320),
+vec3(0.1475, 0.5094, 0.7380),
+vec3(0.1419, 0.5182, 0.7437),
+vec3(0.1362, 0.5270, 0.7491),
+vec3(0.1304, 0.5358, 0.7541),
+vec3(0.1247, 0.5446, 0.7588),
+vec3(0.1188, 0.5533, 0.7632),
+vec3(0.1131, 0.5620, 0.7673),
+vec3(0.1073, 0.5707, 0.7711),
+vec3(0.1016, 0.5794, 0.7746),
+vec3(0.0960, 0.5880, 0.7779),
+vec3(0.0905, 0.5966, 0.7809),
+vec3(0.0851, 0.6052, 0.7837),
+vec3(0.0799, 0.6137, 0.7862),
+vec3(0.0749, 0.6222, 0.7886),
+vec3(0.0701, 0.6307, 0.7907),
+vec3(0.0656, 0.6391, 0.7926),
+vec3(0.0614, 0.6475, 0.7944),
+vec3(0.0575, 0.6558, 0.7960),
+vec3(0.0538, 0.6642, 0.7974),
+vec3(0.0505, 0.6724, 0.7986),
+vec3(0.0475, 0.6807, 0.7997),
+vec3(0.0448, 0.6889, 0.8006),
+vec3(0.0424, 0.6971, 0.8014),
+vec3(0.0402, 0.7053, 0.8021),
+vec3(0.0383, 0.7134, 0.8026),
+vec3(0.0368, 0.7215, 0.8030),
+vec3(0.0355, 0.7295, 0.8032),
+vec3(0.0346, 0.7376, 0.8033),
+vec3(0.0339, 0.7456, 0.8033),
+vec3(0.0336, 0.7535, 0.8031),
+vec3(0.0335, 0.7614, 0.8027),
+vec3(0.0337, 0.7693, 0.8022),
+vec3(0.0342, 0.7771, 0.8016),
+vec3(0.0351, 0.7849, 0.8007),
+vec3(0.0363, 0.7926, 0.7997),
+vec3(0.0379, 0.8003, 0.7986),
+vec3(0.0400, 0.8079, 0.7972),
+vec3(0.0425, 0.8155, 0.7957),
+vec3(0.0454, 0.8230, 0.7940),
+vec3(0.0488, 0.8305, 0.7921),
+vec3(0.0527, 0.8379, 0.7900),
+vec3(0.0571, 0.8453, 0.7877),
+vec3(0.0619, 0.8526, 0.7852),
+vec3(0.0672, 0.8598, 0.7824),
+vec3(0.0731, 0.8669, 0.7795),
+vec3(0.0794, 0.8740, 0.7763),
+vec3(0.0863, 0.8810, 0.7729),
+vec3(0.0936, 0.8879, 0.7692),
+vec3(0.1014, 0.8947, 0.7654),
+vec3(0.1096, 0.9014, 0.7612),
+vec3(0.1182, 0.9080, 0.7567),
+vec3(0.1273, 0.9144, 0.7520),
+vec3(0.1367, 0.9208, 0.7469),
+vec3(0.1464, 0.9270, 0.7414),
+vec3(0.1564, 0.9330, 0.7355),
+vec3(0.1667, 0.9388, 0.7293),
+vec3(0.1773, 0.9445, 0.7225),
+vec3(0.1881, 0.9500, 0.7153),
+vec3(0.1991, 0.9552, 0.7076),
+vec3(0.2104, 0.9602, 0.6994),
+vec3(0.2219, 0.9650, 0.6906),
+vec3(0.2335, 0.9696, 0.6811),
+vec3(0.2454, 0.9738, 0.6711),
+vec3(0.2575, 0.9778, 0.6603),
+vec3(0.2698, 0.9815, 0.6489),
+vec3(0.2826, 0.9848, 0.6368),
+vec3(0.2960, 0.9876, 0.6240),
+vec3(0.3100, 0.9901, 0.6106),
+vec3(0.3246, 0.9920, 0.5965),
+vec3(0.3399, 0.9933, 0.5818),
+vec3(0.3559, 0.9940, 0.5666),
+vec3(0.3726, 0.9941, 0.5508),
+vec3(0.3899, 0.9935, 0.5345),
+vec3(0.4077, 0.9922, 0.5178),
+vec3(0.4260, 0.9901, 0.5006),
+vec3(0.4445, 0.9873, 0.4831),
+vec3(0.4630, 0.9838, 0.4654),
+vec3(0.4814, 0.9798, 0.4475),
+vec3(0.4996, 0.9751, 0.4296),
+vec3(0.5175, 0.9698, 0.4116),
+vec3(0.5350, 0.9641, 0.3938),
+vec3(0.5520, 0.9579, 0.3762),
+vec3(0.5684, 0.9513, 0.3589),
+vec3(0.5843, 0.9443, 0.3420),
+vec3(0.5996, 0.9369, 0.3257),
+vec3(0.6143, 0.9292, 0.3099),
+vec3(0.6283, 0.9212, 0.2946),
+vec3(0.6417, 0.9130, 0.2799),
+vec3(0.6545, 0.9045, 0.2657),
+vec3(0.6666, 0.8958, 0.2519),
+vec3(0.6782, 0.8868, 0.2387),
+vec3(0.6891, 0.8777, 0.2260),
+vec3(0.6993, 0.8685, 0.2137),
+vec3(0.7090, 0.8591, 0.2019),
+vec3(0.7182, 0.8496, 0.1905),
+vec3(0.7267, 0.8399, 0.1796),
+vec3(0.7347, 0.8302, 0.1690),
+vec3(0.7421, 0.8205, 0.1588),
+vec3(0.7491, 0.8107, 0.1489),
+vec3(0.7555, 0.8008, 0.1393),
+vec3(0.7614, 0.7910, 0.1301),
+vec3(0.7669, 0.7811, 0.1211),
+vec3(0.7719, 0.7712, 0.1124),
+vec3(0.7765, 0.7612, 0.1041),
+vec3(0.7807, 0.7513, 0.0961),
+vec3(0.7845, 0.7413, 0.0884),
+vec3(0.7879, 0.7313, 0.0810),
+vec3(0.7910, 0.7213, 0.0741),
+vec3(0.7937, 0.7113, 0.0675),
+vec3(0.7961, 0.7012, 0.0613),
+vec3(0.7981, 0.6912, 0.0555),
+vec3(0.7999, 0.6812, 0.0502),
+vec3(0.8013, 0.6711, 0.0453),
+vec3(0.8025, 0.6610, 0.0408),
+vec3(0.8034, 0.6510, 0.0370),
+vec3(0.8040, 0.6409, 0.0337),
+vec3(0.8043, 0.6308, 0.0311),
+vec3(0.8044, 0.6207, 0.0291),
+vec3(0.8043, 0.6107, 0.0275),
+vec3(0.8039, 0.6006, 0.0263),
+vec3(0.8033, 0.5905, 0.0254),
+vec3(0.8025, 0.5804, 0.0249),
+vec3(0.8014, 0.5703, 0.0246),
+vec3(0.8002, 0.5602, 0.0245),
+vec3(0.7987, 0.5501, 0.0245),
+vec3(0.7970, 0.5400, 0.0247),
+vec3(0.7952, 0.5300, 0.0250),
+vec3(0.7931, 0.5199, 0.0255),
+vec3(0.7908, 0.5098, 0.0261),
+vec3(0.7884, 0.4998, 0.0269),
+vec3(0.7857, 0.4898, 0.0279),
+vec3(0.7828, 0.4797, 0.0291),
+vec3(0.7797, 0.4697, 0.0305),
+vec3(0.7764, 0.4598, 0.0320),
+vec3(0.7729, 0.4498, 0.0338),
+vec3(0.7692, 0.4399, 0.0357),
+vec3(0.7653, 0.4301, 0.0378),
+vec3(0.7612, 0.4202, 0.0400),
+vec3(0.7568, 0.4105, 0.0424),
+vec3(0.7523, 0.4007, 0.0448),
+vec3(0.7476, 0.3910, 0.0473),
+vec3(0.7426, 0.3814, 0.0499),
+vec3(0.7374, 0.3718, 0.0525),
+vec3(0.7321, 0.3622, 0.0551),
+vec3(0.7265, 0.3528, 0.0577),
+vec3(0.7207, 0.3434, 0.0604),
+vec3(0.7147, 0.3340, 0.0630),
+vec3(0.7086, 0.3248, 0.0657),
+vec3(0.7022, 0.3156, 0.0684),
+vec3(0.6956, 0.3065, 0.0710),
+vec3(0.6888, 0.2974, 0.0737),
+vec3(0.6818, 0.2885, 0.0763),
+vec3(0.6746, 0.2796, 0.0789),
+vec3(0.6672, 0.2709, 0.0813),
+vec3(0.6596, 0.2622, 0.0837),
+vec3(0.6519, 0.2537, 0.0860),
+vec3(0.6439, 0.2452, 0.0882),
+vec3(0.6358, 0.2368, 0.0902),
+vec3(0.6275, 0.2286, 0.0921),
+vec3(0.6191, 0.2205, 0.0939),
+vec3(0.6105, 0.2124, 0.0955),
+vec3(0.6017, 0.2045, 0.0969),
+vec3(0.5927, 0.1968, 0.0982),
+vec3(0.5836, 0.1891, 0.0994),
+vec3(0.5744, 0.1816, 0.1004),
+vec3(0.5650, 0.1742, 0.1012),
+vec3(0.5554, 0.1670, 0.1018),
+vec3(0.5457, 0.1599, 0.1023),
+vec3(0.5358, 0.1530, 0.1025),
+vec3(0.5258, 0.1462, 0.1026),
+vec3(0.5157, 0.1396, 0.1025),
+vec3(0.5054, 0.1332, 0.1022),
+vec3(0.4950, 0.1269, 0.1017),
+vec3(0.4845, 0.1209, 0.1011),
+vec3(0.4738, 0.1150, 0.1002),
+vec3(0.4630, 0.1093, 0.0991),
+vec3(0.4520, 0.1038, 0.0978),
+vec3(0.4410, 0.0985, 0.0963),
+vec3(0.4298, 0.0934, 0.0946),
+vec3(0.4186, 0.0884, 0.0927),
+vec3(0.4072, 0.0836, 0.0907),
+vec3(0.3958, 0.0789, 0.0885),
+vec3(0.3842, 0.0743, 0.0861),
+vec3(0.3726, 0.0698, 0.0836),
+vec3(0.3609, 0.0654, 0.0809),
+vec3(0.3492, 0.0611, 0.0781),
+vec3(0.3374, 0.0568, 0.0751),
+vec3(0.3255, 0.0525, 0.0720),
+vec3(0.3135, 0.0483, 0.0687),
+vec3(0.3016, 0.0441, 0.0653),
+vec3(0.2895, 0.0398, 0.0618),
+vec3(0.2774, 0.0356, 0.0581),
+vec3(0.2653, 0.0316, 0.0543),
+vec3(0.2531, 0.0279, 0.0503),
+vec3(0.2409, 0.0243, 0.0463),
+vec3(0.2286, 0.0209, 0.0421),
+vec3(0.2162, 0.0176, 0.0377),
+vec3(0.2038, 0.0146, 0.0335),
+vec3(0.1913, 0.0118, 0.0294),
+vec3(0.1788, 0.0091, 0.0256),
+vec3(0.1661, 0.0067, 0.0219)
+);
+
+vec3 breeze(float x) {
+    return breezeValues[int(x * 256.0)];
+}
+
 
     struct Implicit {
         float Distance;
@@ -1060,6 +1324,150 @@ export default `
         }
         return clamp(1.0 - occ*1.5, 0.0, 1.0);
     }
+
+    vec4 DrawVectorField(vec3 p, ColorImplicit iImplicit, float iSpacing, float iLineHalfThick, vec4 iColor)
+    {
+        vec2 spacingVec = vec2(iSpacing);
+        vec2 param = mod(p.xy, spacingVec);
+        vec2 center = p.xy - param + 0.5 * spacingVec;
+        vec2 toCenter = p.xy - center;
+    
+        float gradParam = dot(toCenter, iImplicit.Gradient.xy) / length(iImplicit.Gradient);
+        float gradLength = length(iImplicit.Gradient);
+        
+        float circleSizeFactor = max(length(iImplicit.Gradient.xy) / gradLength, 0.2);
+        bool isInCircle = length(p.xy - center) < iSpacing * 0.45 * circleSizeFactor;
+        bool isNearLine = abs(dot(toCenter, vec2(-iImplicit.Gradient.y, iImplicit.Gradient.x))) / gradLength < iLineHalfThick + (-gradParam + iSpacing * 0.5) * 0.125;
+    
+        if (isInCircle && isNearLine)
+            return vec4(iColor.rgb * 0.5, 1.0);
+    
+        return iColor;
+    }
+
+
+    vec4 strokeImplicit(ColorImplicit a, float width, vec4 base) {
+        float interp = clamp(width * 0.5 - abs(a.Distance) / length(a.Gradient), 0.0, 1.0);
+        return mix(base, a.Color, a.Color.a * interp);
+    }
+
+    vec4 drawImplicit(ColorImplicit a, vec4 base) {
+        vec4 colorWarm = vec4(1.0, 0.4, 0.2, 1.0);
+        vec4 colorCool = vec4(0.2, 0.4, 1.0, 1.0);
+        float falloff = 100.0;
+        float bandWidth = 20.0;
+        float widthThin = 2.0;
+        float widthThick = 4.0;
+    
+        vec4 color = a.Distance > 0.0 ? colorWarm : colorCool;
+        vec4 opColor = mix(base, color, 0.1);
+        ColorImplicit wave = TriangleWaveEvenPositive(a, bandWidth);  
+    
+        wave.Color.a = max(0.2, 1.0 - abs(a.Distance) / falloff);
+        opColor = strokeImplicit(wave, widthThin, opColor);
+        opColor = strokeImplicit(a, widthThick, opColor);
+        
+        return opColor;
+    }
+    
+        // Helper function for turboImplicit
+    vec4 breeze4(float t) {
+        vec3 c0 = vec3(0.0, 0.0, 0.0);
+        vec3 c1 = vec3(0.0, 0.0, 1.0);
+        vec3 c2 = vec3(0.0, 1.0, 1.0);
+        vec3 c3 = vec3(0.0, 1.0, 0.0);
+        vec3 c4 = vec3(1.0, 1.0, 0.0);
+        vec3 c5 = vec3(1.0, 0.0, 0.0);
+
+        float x = clamp(t, 0.0, 1.0);
+        float x2 = x * 5.0;
+        int i = int(x2);
+        float f = fract(x2);
+
+        vec3 color;
+        if (i == 0) color = mix(c0, c1, f);
+        else if (i == 1) color = mix(c1, c2, f);
+        else if (i == 2) color = mix(c2, c3, f);
+        else if (i == 3) color = mix(c3, c4, f);
+        else color = mix(c4, c5, f);
+
+        return vec4(color, 1.0);
+    }
+
+    vec4 turboImplicit(ColorImplicit a, float range) {
+        float widthThin = 2.0;
+        float halfrange = range * 0.5;
+        vec4 opColor = breeze4(abs(mod(a.Distance, range) - halfrange) / halfrange);    
+
+        ColorImplicit wave = TriangleWaveEvenPositive(a, range * 0.05);  
+        opColor = strokeImplicit(wave, widthThin, opColor);
+        
+        return opColor;
+    }
+
+    vec4 colorDerivative(ColorImplicit a, vec4 base) {
+        vec4 colorWarm = vec4(1.0, 0.4, 0.2, 1.0);
+        vec4 colorCool = vec4(0.2, 0.4, 1.0, 1.0);
+        float widthThin = 2.0;
+
+        vec4 opColor = mix(base, mix(colorCool, colorWarm, -a.Distance), 0.1);
+        ColorImplicit wave = TriangleWaveEvenPositive(a, 0.1);  
+
+        opColor = strokeImplicit(wave, widthThin, opColor);
+        
+        return opColor;
+    }
+
+    vec4 drawLine(ColorImplicit a, vec4 base) {
+    ColorImplicit line = a;
+    line.Color.a = 0.75;
+    return strokeImplicit(line, 2.0, base);
+    }
+
+    vec4 fillImplicit(ColorImplicit a, vec4 base) {
+        float interp = 0.5 - clamp(a.Distance / length(a.Gradient), -0.5, 0.5);
+        return mix(base, a.Color, a.Color.a * interp);
+    }
+
+
+
+    Implicit Sampson(Implicit a) {
+        return Multiply(1.0 / length(a.Gradient), a);
+    }
+
+    // Arrow visualization constants
+    float arrowRadius = 8.0;
+    float arrowSize = 30.0;
+
+    vec4 drawArrow(vec2 p, vec2 startPt, vec2 endPt, vec4 color, vec4 base) {
+        vec2 delta = startPt - endPt;
+        vec2 arrowNormal = vec2(delta.y, -delta.x);
+        Implicit arrowSpine = Plane(p, endPt, arrowNormal);
+        mat2 arrowSideRotation = Rotate2D(PI / 12.0);
+    
+        Implicit tip1 = Plane(p, endPt, -arrowNormal * arrowSideRotation);
+        Implicit tip2 = Plane(p, endPt, arrowNormal * inverse(arrowSideRotation));
+        Implicit tipMax = Max(tip1, tip2);
+    
+        vec2 spineDir = normalize(delta);
+        vec2 arrowBackPt = endPt + arrowSize * spineDir;
+        vec2 arrowTailPt = startPt;
+    
+        Implicit backPlane = Plane(p, arrowBackPt, delta);
+        tipMax = Max(tipMax, backPlane);
+    
+        Implicit spineBound = Shell(Plane(p, 0.5 * (arrowBackPt + arrowTailPt), spineDir), length(arrowBackPt - arrowTailPt), 0.0);
+    
+        // Convert to ColorImplicit before stroking/filling
+        ColorImplicit spineColor = ColorImplicit(arrowSpine.Distance, arrowSpine.Gradient, color);
+        ColorImplicit tipColor = ColorImplicit(tipMax.Distance, tipMax.Gradient, color);
+    
+        if (spineBound.Distance < 0.0 && dot(spineDir, arrowBackPt - arrowTailPt) < 0.0)
+            base = strokeImplicit(spineColor, 4.0, base);
+    
+        return fillImplicit(tipColor, base);
+    }
+
 
     void main() {
         if (u_mode == 0) { // Raymarching Mode
