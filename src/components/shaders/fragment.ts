@@ -1,4 +1,4 @@
-export default `
+export default /*glsl*/`
     // Constants and basic types
     #define STANDALONE 0
     #define PI 3.14159265358979
