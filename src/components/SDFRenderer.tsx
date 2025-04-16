@@ -2,11 +2,11 @@ import { useRef } from 'react';
 import * as THREE from 'three';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useControls } from 'leva';
-import { createUniforms } from './shaders/uniforms';
+import { createUniforms } from './shaders/utils/uniforms.ts';
 import { createControls } from './controls';
 import { Controls } from './types';
-import vertexShader from './shaders/vertex.ts';
-import fragmentShader from './shaders/fragment.ts';
+import vertexShader from './shaders/vertex.glsl';
+import fragmentShader from './shaders/fragment.glsl';
 
 const SDFRenderer = () => {
     const meshRef = useRef<THREE.Mesh>(null);

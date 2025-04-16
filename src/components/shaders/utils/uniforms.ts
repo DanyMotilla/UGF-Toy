@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { Controls } from '../types';
+import { Controls } from '../../types.ts';
 
 // Uniform types
 interface BaseUniforms {
