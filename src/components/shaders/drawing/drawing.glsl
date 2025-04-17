@@ -1,3 +1,10 @@
+#ifndef DRAWING_GLSL
+#define DRAWING_GLSL
+
+#include "../utils/constants.glsl"
+#include "../implicits/implicit.glsl"
+#include "../implicits/colorImplicit.glsl"
+
 //======================================
 // DRAWING FUNCTIONS
 //======================================
@@ -60,28 +67,9 @@ float mix11(float a, float b, float t) {
     return mix(a, b, t * 0.5 + 0.5);
 }
 
-mat2 Rotate2D(float theta) { // typo in other shadertoys
-    float c = cos(theta);
-    float s = sin(theta);
-    return mat2(
-        vec2(c, -s),
-        vec2(s, c)
-    );
-}
-
 float Dot(vec3 a, vec3 b) {
 float _Dot_002 = a.x * b.x + a.y * b.y;
 return _Dot_002 + a.z * b.z;
-}
-
-float Length(vec3 v) {
-float _Length_000 = Dot(v, v);
-return sqrt(_Length_000);
-}
-
-float AddVec(vec3 v) {
-float _AddVec_000 = v.x + v.y;
-return _AddVec_000 + v.z;
 }
 
 mat3 RotateZ(float theta) {
@@ -284,3 +272,5 @@ vec4 drawArrow(vec2 p, vec2 startPt, vec2 endPt, vec4 color, vec4 base) {
 
     return fillImplicit(tipColor, base);
 }
+
+#endif // DRAWING_GLSL

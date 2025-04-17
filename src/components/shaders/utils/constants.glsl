@@ -1,3 +1,6 @@
+#ifndef CONSTANTS_GLSL
+#define CONSTANTS_GLSL
+
 //======================================
 // CONSTANTS
 // (PI, colors, and other constants)
@@ -8,25 +11,27 @@
 #define SQRT2 1.41421356237
 #define SQRT3 1.73205080757
 
+//======================================
+// UNIFORMS
+//======================================
 // Base uniforms
 uniform float u_time;
-uniform vec2 u_resolution;
-uniform int u_mode;
-
-// Mesh mode uniforms
-uniform vec3 u_color;
-uniform float u_thickness;
-uniform int u_effectType;
-uniform int u_sdfType;
-uniform float u_effectStrength;
-uniform float u_contrast;
 uniform float u_scale;
 uniform float u_posX;
 uniform float u_posY;
 uniform float u_posZ;
-
-// Raymarching mode uniforms
+uniform float u_effectStrength;
+uniform float u_speed;
+uniform float u_contrast;
+uniform int u_effectType;
+uniform int u_sdfType;
+uniform int u_mode;
+uniform float u_thickness;
+uniform vec3 u_color;
+uniform vec2 u_resolution;
 uniform vec3 u_cameraPos;
+
+// Raymarching uniforms
 uniform float u_raymarchSteps;
 uniform float u_raymarchEpsilon;
 uniform float u_count;
@@ -40,24 +45,34 @@ uniform float u_drop_zx;
 uniform float u_drop_xy;
 uniform int u_variantIndex;
 
-// Varyings
+//======================================
+// VARYINGS
+//======================================
 varying vec3 vNormal;
 varying vec3 vPosition;
+varying vec2 vUv;
 varying vec3 vWorldPosition;
 
-const vec3 center = vec3(0.5);
+//======================================
+// UTILITY FUNCTIONS
+//======================================
+mat2 Rotate2D(float theta) {
+    float c = cos(theta);
+    float s = sin(theta);
+    return mat2(c, -s, s, c);
+}
 
-// to be deleted
-float count = 1.50000000;
-float size_x = 10.00000000;
-float size_y = 10.00000000;
-float size_z = 10.00000000;
-float thickness = 0.80000000;
-float bias = -0.19000000;
-float drop_yz = 1.00000000;
-float drop_zx = 1.00000000;
-float drop_xy = 0.65000000;
-int variantIndex = 0;
+float Length(vec3 v) {
+    float _Length_000 = dot(v, v);
+    return sqrt(_Length_000);
+}
+
+float AddVec(vec3 v) {
+    float _AddVec_000 = v.x + v.y;
+    return _AddVec_000 + v.z;
+}
+
+const vec3 center = vec3(0.5);
 
 vec3 DirX = vec3(1.0, 0.0, 0.0);
 vec3 DirY = vec3(0.0, 1.0, 0.0);
@@ -356,3 +371,5 @@ vec3[256] breezeValues = vec3[](
 vec3 breeze(float x) {
     return breezeValues[int(x * 256.0)];
 }
+
+#endif // CONSTANTS_GLSL

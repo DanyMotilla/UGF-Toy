@@ -1,3 +1,8 @@
+#ifndef COLOR_IMPLICIT_GLSL
+#define COLOR_IMPLICIT_GLSL
+
+#include "../utils/constants.glsl"
+
 //======================================
 // COLOR IMPLICIT CLASS & FUNCTIONS
 //======================================
@@ -170,3 +175,5 @@ ColorImplicit UnionSmoothMedial(ColorImplicit a, ColorImplicit b, float k) {
     vec4 color = mix(a.Color, b.Color, blendingRatio);
     return ColorImplicit(base.Distance, base.Gradient, color);
 }
+
+#endif // COLOR_IMPLICIT_GLSL

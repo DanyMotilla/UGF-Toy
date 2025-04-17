@@ -1,3 +1,8 @@
+#ifndef IMPLICIT_GLSL
+#define IMPLICIT_GLSL
+
+#include "../utils/constants.glsl"
+
 //======================================
 // IMPLICIT CLASS & FUNCTIONS
 //======================================
@@ -623,3 +628,5 @@ Implicit map(vec3 p) {
     // Combine with bounds (distance only)
     return Max(merged, bounds);
 }
+
+#endif // IMPLICIT_GLSL
