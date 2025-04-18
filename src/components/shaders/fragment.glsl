@@ -7,7 +7,8 @@
 void main() {
     if (u_mode == 0) { // Raymarching Mode
         vec2 resolution = u_resolution;
-        vec2 p = (-resolution.xy + 2.0*gl_FragCoord.xy)/resolution.y;
+        // Normalize coordinates to [-1, 1] range, maintaining aspect ratio
+        vec2 p = (2.0 * gl_FragCoord.xy - resolution.xy) / min(resolution.x, resolution.y);
         float rad = 1.25;
         vec3 ro = vec3(rad*cos(0.0), rad*sin(0.0), 0.7);
         vec3 ta = vec3(0.0);
@@ -31,7 +32,8 @@ void main() {
             t += hit.Distance * 0.45;
         }
 
-        vec3 col = vec3(0.2); // Default background
+        // Background color matching #242424 (36/255 = 0.141176471)
+        vec3 col = vec3(0.141176471);
         if(t < tmax) {
             vec3 pos = ro + t*rd;
             vec3 nor = calcNormal(pos);

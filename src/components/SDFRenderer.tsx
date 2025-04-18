@@ -11,9 +11,12 @@ import fragmentShader from './shaders/fragment.glsl';
 const SDFRenderer = () => {
     const meshRef = useRef<THREE.Mesh>(null);
     const materialRef = useRef<THREE.ShaderMaterial>(null);
-    const { size, camera } = useThree();
+    const { size, camera, gl } = useThree();
     const controls = useControls(createControls()) as unknown as Controls;
     const uniforms = useRef<{ [key: string]: THREE.IUniform<any> }>(createUniforms(controls, size, camera)).current;
+
+    // Set pixel ratio for high DPI displays
+    gl.setPixelRatio(window.devicePixelRatio);
 
     useFrame(({ clock }) => {
         if (!materialRef.current) return;
@@ -37,8 +40,9 @@ const SDFRenderer = () => {
             uniforms.u_effectStrength.value = controls.effectStrength;
             uniforms.u_contrast.value = controls.contrast;
         } else {
-            // Raymarching specific updates
-            uniforms.u_resolution.value.set(size.width, size.height);
+            // Raymarching specific updates - account for pixel ratio
+            const pixelRatio = window.devicePixelRatio;
+            uniforms.u_resolution.value.set(size.width * pixelRatio, size.height * pixelRatio);
             uniforms.u_cameraPos.value.copy(camera.position);
             uniforms.u_raymarchSteps.value = controls.raymarchSteps;
             uniforms.u_raymarchEpsilon.value = controls.raymarchEpsilon;
