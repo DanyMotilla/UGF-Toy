@@ -1,8 +1,7 @@
-import React from 'react';
 import { Leva } from 'leva';
 import { Canvas } from '@react-three/fiber';
 import { Stats } from '@react-three/drei';
-import SDFRenderer from './SDFRenderer.tsx';
+import SDFRenderer from './SDFRenderer';
 
 const getLevaScale = () => {
     if (typeof window === 'undefined') return 1;
@@ -48,19 +47,14 @@ export const Scene = () => {
             />
             <Stats />
             <Canvas
-                camera={{ 
-                    position: [0, 0, 3],
-                    fov: 60,
-                    // Lock camera position and rotation
-                    rotation: [0, 0, 0],
-                    up: [0, 1, 0]
+                gl={{ 
+                    antialias: true,
+                    alpha: true,
+                    preserveDrawingBuffer: true
                 }}
-                gl={{ antialias: true }}
-                onCreated={({ gl, camera }) => {
-                    gl.setClearColor('#242424');
-                    // Disable camera controls
-                    camera.rotation.set(0, 0, 0);
-                    camera.position.set(0, 0, 3);
+                dpr={window.devicePixelRatio}
+                style={{
+                    background: '#242424'
                 }}
             >
                 <ambientLight intensity={0.5} />

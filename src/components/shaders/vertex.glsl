@@ -5,6 +5,7 @@
 #include "./drawing/drawing.glsl"
 
 void main() {
+    // Set up varyings
     vNormal = normalize(normalMatrix * normal);
     vUv = uv;
     vWorldPosition = (modelMatrix * vec4(position, 1.0)).xyz;
@@ -12,8 +13,9 @@ void main() {
 
     vec3 pos = position;
 
-    if (u_mode == 1) {
-        if (u_effectType == 1) {
+    // Apply displacement in Mesh mode
+    if (u_mode == 1) { // Mesh mode
+        if (u_effectType == 1) { // Displacement effect
             float sdfValue = mapSdf(vWorldPosition);
             sdfValue = tanh(sdfValue * u_contrast);
             pos += normal * sdfValue * u_effectStrength * 0.2;
