@@ -21,28 +21,22 @@ ColorImplicit CreateColorImplicit(Implicit iImplicit, vec4 iColor) {
     return ColorImplicit(iImplicit.Distance, iImplicit.Gradient, iColor);
 }
 
-
 ColorImplicit Negate(ColorImplicit iColorImplicit) {
     return ColorImplicit(-iColorImplicit.Distance, -iColorImplicit.Gradient, iColorImplicit.Color);
 }
 
 ColorImplicit Add(Implicit a, Implicit b, vec4 colorA, vec4 colorB) {
     Implicit result = Add(a, b);
-    return ColorImplicit(result.Distance, result.Gradient, mix(colorA, colorB, 0.5));
+    return ColorImplicit(result.Distance, result.Gradient, 0.5 * (colorA + colorB));
 }
 
 ColorImplicit Add(ColorImplicit a, float b) {
-    return ColorImplicit(
-        a.Distance + b,
-        a.Gradient,
-        a.Color
-    );
+    return ColorImplicit(a.Distance + b, a.Gradient, a.Color);
 }
 
 ColorImplicit Subtract(Implicit a, Implicit b, vec4 colorA, vec4 colorB) {
-    float blendingRatio;
-    Implicit result = Subtract(a, b, blendingRatio);
-    return ColorImplicit(result.Distance, result.Gradient, mix(colorA, colorB, blendingRatio));
+    Implicit result = Subtract(a, b);
+    return ColorImplicit(result.Distance, result.Gradient, 0.5 * (colorA + colorB));
 }
 
 // Min with color blend
@@ -53,7 +47,7 @@ ColorImplicit Min(Implicit a, Implicit b, vec4 colorA, vec4 colorB) {
 }
 
 ColorImplicit Min(ColorImplicit a, ColorImplicit b) {
-    if (a.Distance <= b.Distance)
+    if(a.Distance <= b.Distance)
         return a;
 
     return b;
@@ -67,7 +61,7 @@ ColorImplicit Max(Implicit a, Implicit b, vec4 colorA, vec4 colorB) {
 }
 
 ColorImplicit Max(ColorImplicit a, ColorImplicit b) {
-    if (a.Distance >= b.Distance)
+    if(a.Distance >= b.Distance)
         return a;
 
     return b;
@@ -119,12 +113,7 @@ ColorImplicit RectangleCenterRotatedExp(vec2 p, vec2 center, vec2 size, float an
 
 ColorImplicit IntersectionEuclidean(ColorImplicit a, ColorImplicit b, float radius) {
     float blendingRatio;
-    Implicit result = IntersectionEuclidean(
-        Implicit(a.Distance, a.Gradient),
-        Implicit(b.Distance, b.Gradient),
-        radius,
-        blendingRatio
-    );
+    Implicit result = IntersectionEuclidean(Implicit(a.Distance, a.Gradient), Implicit(b.Distance, b.Gradient), radius, blendingRatio);
     vec4 blendedColor = mix(a.Color, b.Color, blendingRatio);
     return ColorImplicit(result.Distance, result.Gradient, blendedColor);
 }
@@ -143,35 +132,20 @@ ColorImplicit TriangleWaveEvenPositive(ColorImplicit param, float period) {
 
 ColorImplicit UnionEuclidean(ColorImplicit a, ColorImplicit b, float radius) {
     float blendingRatio;
-    Implicit base = UnionEuclidean(
-        Implicit(a.Distance, a.Gradient),
-        Implicit(b.Distance, b.Gradient),
-        radius,
-        blendingRatio
-    );
+    Implicit base = UnionEuclidean(Implicit(a.Distance, a.Gradient), Implicit(b.Distance, b.Gradient), radius, blendingRatio);
     vec4 color = mix(a.Color, b.Color, blendingRatio);
     return ColorImplicit(base.Distance, base.Gradient, color);
 }
 
 ColorImplicit UnionEuclidean(ColorImplicit a, ColorImplicit b, ColorImplicit c, float radius) {
-    Implicit base = UnionEuclidean(
-        Implicit(a.Distance, a.Gradient),
-        Implicit(b.Distance, b.Gradient),
-        Implicit(c.Distance, c.Gradient),
-        radius
-    );
+    Implicit base = UnionEuclidean(Implicit(a.Distance, a.Gradient), Implicit(b.Distance, b.Gradient), Implicit(c.Distance, c.Gradient), radius);
     vec4 color = (a.Color + b.Color + c.Color) / 3.0;
     return ColorImplicit(base.Distance, base.Gradient, color);
 }
 
 ColorImplicit UnionSmoothMedial(ColorImplicit a, ColorImplicit b, float k) {
     float blendingRatio;
-    Implicit base = UnionSmoothMedial(
-        Implicit(a.Distance, a.Gradient),
-        Implicit(b.Distance, b.Gradient),
-        k,
-        blendingRatio
-    );
+    Implicit base = UnionSmoothMedial(Implicit(a.Distance, a.Gradient), Implicit(b.Distance, b.Gradient), k, blendingRatio);
     vec4 color = mix(a.Color, b.Color, blendingRatio);
     return ColorImplicit(base.Distance, base.Gradient, color);
 }

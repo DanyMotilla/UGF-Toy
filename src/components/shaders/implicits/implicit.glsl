@@ -12,17 +12,16 @@ struct Implicit {
     vec3 Gradient;
 };
 
-// Raymarching mode
-Implicit map(vec3 p);
-
 // Basic construction functions
-Implicit CreateImplicit() { return Implicit(0.0, vec3(0.0)); }
-Implicit CreateImplicit(float iValue) { return Implicit(iValue, vec3(0.0)); }
-Implicit CreateImplicit(float iValue, vec3 iGradient){ return Implicit(iValue, iGradient); }
+Implicit CreateImplicit() {
+    return Implicit(0.0, vec3(0.0));
+}
+Implicit CreateImplicit(float iValue) {
+    return Implicit(iValue, vec3(0.0));
+}
 
-
-Implicit Negate(Implicit iImplicit) {
-    return Implicit(-iImplicit.Distance, -iImplicit.Gradient);
+Implicit Negate(Implicit v) {
+    return Implicit(-v.Distance, -v.Gradient);
 }
 
 Implicit Add(Implicit a, Implicit b) {
@@ -33,15 +32,8 @@ Implicit Add(Implicit a, float b) {
     return Implicit(a.Distance + b, a.Gradient);
 }
 
-Implicit Subtract(Implicit a, Implicit b, out float blendingRatio) {
-    float total = a.Distance + b.Distance;
-    blendingRatio = 0.5 + 0.5 * (b.Distance) / (total == 0.0 ? 1e-6 : total);
-    return Implicit(a.Distance - b.Distance, a.Gradient - b.Gradient);
-}
-
 Implicit Subtract(Implicit a, Implicit b) {
-    float unused;
-    return Subtract(a, b, unused);
+    return Implicit(a.Distance - b.Distance, a.Gradient - b.Gradient);
 }
 
 Implicit Subtract(Implicit a, float b) {
@@ -56,24 +48,21 @@ Implicit Multiply(Implicit a, Implicit b) {
     return Implicit(a.Distance * b.Distance, a.Distance * b.Gradient + b.Distance * a.Gradient);
 }
 
-Implicit Multiply(float iT, Implicit iImplicit) {
-    return Implicit(iT * iImplicit.Distance, iT * iImplicit.Gradient);
+Implicit Multiply(float a, Implicit b) {
+    return Implicit(a * b.Distance, a * b.Gradient);
 }
 
-Implicit Multiply(Implicit iImplicit, float iT) {
-    return Multiply(iT, iImplicit);
+Implicit Multiply(Implicit a, float b) {
+    return Multiply(b, a);
 }
 
 // NEW
-Implicit Square(Implicit iA) { return Multiply(iA, iA); }
-Implicit Square(float iA) {
-    Implicit a = CreateImplicit(iA);
-    return Multiply(a, a);
+Implicit Square(Implicit v) {
+    return Multiply(v, v);
 }
 
 Implicit Divide(Implicit a, Implicit b) {
-    return Implicit(a.Distance / b.Distance,
-        (b.Distance * a.Gradient - a.Distance * b.Gradient) / (b.Distance * b.Distance));
+    return Implicit(a.Distance / b.Distance, (b.Distance * a.Gradient - a.Distance * b.Gradient) / (b.Distance * b.Distance));
 }
 Implicit Divide(Implicit a, float b) {
     return Implicit(a.Distance / b, a.Gradient / b);
@@ -84,46 +73,68 @@ Implicit Divide(float a, Implicit b) {
 
 // Min — standard overloads
 Implicit Min(Implicit a, Implicit b) {
-    if (a.Distance <= b.Distance) {
+    if(a.Distance <= b.Distance) {
         return a;
     } else {
         return b;
     }
 }
 
-Implicit Min(Implicit a, float b) { return Min(a, CreateImplicit(b)); }
-Implicit Min(float a, Implicit b) { return Min(CreateImplicit(a), b); }
-Implicit Min(Implicit a, Implicit b, Implicit c) { return Min(a, Min(b, c)); }
-Implicit Min(Implicit a, Implicit b, Implicit c, Implicit d) { return Min(a, Min(b, Min(c, d))); }
+Implicit Min(Implicit a, float b) {
+    return Min(a, CreateImplicit(b));
+}
+Implicit Min(float a, Implicit b) {
+    return Min(CreateImplicit(a), b);
+}
+Implicit Min(Implicit a, Implicit b, Implicit c) {
+    return Min(a, Min(b, c));
+}
+Implicit Min(Implicit a, Implicit b, Implicit c, Implicit d) {
+    return Min(a, Min(b, Min(c, d)));
+}
 
 // Max — standard overloads
 Implicit Max(Implicit a, Implicit b) {
-    if (a.Distance >= b.Distance) {
+    if(a.Distance >= b.Distance) {
         return a;
     } else {
         return b;
     }
 }
 
-Implicit Max(Implicit a, float b) { return Max(a, CreateImplicit(b)); }
-Implicit Max(float a, Implicit b) { return Max(CreateImplicit(a), b); }
-Implicit Max(Implicit a, Implicit b, Implicit c) { return Max(a, Max(b, c)); }
-Implicit Max(Implicit a, Implicit b, Implicit c, Implicit d) { return Max(a, Max(b, Max(c, d))); }
+Implicit Max(Implicit a, float b) {
+    return Max(a, CreateImplicit(b));
+}
+Implicit Max(float a, Implicit b) {
+    return Max(CreateImplicit(a), b);
+}
+Implicit Max(Implicit a, Implicit b, Implicit c) {
+    return Max(a, Max(b, c));
+}
+Implicit Max(Implicit a, Implicit b, Implicit c, Implicit d) {
+    return Max(a, Max(b, Max(c, d)));
+}
 
 Implicit Compare(Implicit iA, Implicit iB) {
-    if (iA.Distance < iB.Distance) return CreateImplicit(-1.0);
-    if (iA.Distance > iB.Distance) return CreateImplicit(1.0);
+    if(iA.Distance < iB.Distance)
+        return CreateImplicit(-1.0);
+    if(iA.Distance > iB.Distance)
+        return CreateImplicit(1.0);
     return CreateImplicit(0.0);
 }
 
-Implicit Compare(Implicit iA, float iB) { return Compare(iA, CreateImplicit(iB)); }
-Implicit Compare(float iA, Implicit iB) { return Compare(CreateImplicit(iA), iB); }
+Implicit Compare(Implicit iA, float iB) {
+    return Compare(iA, CreateImplicit(iB));
+}
+Implicit Compare(float iA, Implicit iB) {
+    return Compare(CreateImplicit(iA), iB);
+}
 Implicit Compare(float iA, float iB) {
     return CreateImplicit(iA == iB ? 0.0 : (iA > iB ? 1.0 : -1.0));
 }
 
 Implicit Conditional(bool condition, Implicit shape1, Implicit shape2) {
-    if (condition) {
+    if(condition) {
         return shape1;
     } else {
         return shape2;
@@ -200,8 +211,7 @@ Implicit Plane(vec2 p, vec2 origin, vec2 normal) {
     return Plane(vec3(p, 0.0), vec3(origin, 0.0), vec3(normal, 0.0));
 }
 
-Implicit Circle(vec2 p, vec2 center, float iRadius)
-{
+Implicit Circle(vec2 p, vec2 center, float iRadius) {
     vec2 centered = p - center;
     float len = length(centered);
     float length = len - iRadius;
@@ -227,7 +237,7 @@ Implicit RectangleCentered(vec2 p, vec2 center, vec2 size) {
     float dist = length(max(d, vec2(0.0))) + min(max(d.x, d.y), 0.0);
 
     vec2 grad = d.x > d.y ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
-    if (d.x > 0. && d.y > 0.)
+    if(d.x > 0. && d.y > 0.)
         grad = d / length(d);
 
     grad *= -sign(centered);
@@ -247,11 +257,11 @@ Implicit RectangleCenterRotated(vec2 p, vec2 center, vec2 size, float angle) {
     centered = rot * centered;
 
     vec2 b = size * 0.5;
-    vec2 d = abs(centered)-b;
+    vec2 d = abs(centered) - b;
     float dist = length(max(d, vec2(0.0))) + min(max(d.x, d.y), 0.0);
 
-    vec2 grad = d.x > d.y ? vec2(1.0, 0.0) : vec2 (0.0, 1.0);
-    if (d.x > 0. && d.y > 0.)
+    vec2 grad = d.x > d.y ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+    if(d.x > 0. && d.y > 0.)
         grad = d / length(d);
 
     grad *= -sign(centered);
@@ -282,7 +292,7 @@ Implicit RectangleCenterRotatedExp(vec2 p, vec2 center, vec2 size, float angle) 
     return Add(xPlane, yPlane);
 }
 
-vec3 Boundary(vec3 iP, Implicit i) {
+vec3 Boundary(Implicit i) {
     return -i.Distance * i.Gradient;
 }
 
@@ -309,7 +319,7 @@ Implicit IntersectionEuclidean(Implicit a, Implicit b, float radius, out float b
 
     Implicit op = Add(Min(Negate(r), maxab), EuclideanNorm(ua, ub));
 
-    if (maxab.Distance <= 0.0) {
+    if(maxab.Distance <= 0.0) {
         op.Gradient = maxab.Gradient;
     }
 
@@ -350,14 +360,12 @@ Implicit BoxCenter(vec3 iP, vec3 iCenter, vec3 iSize) {
     vec3 p = iP - iCenter;
     vec3 b = iSize * 0.5;
 
-    vec3 d = abs(p)-b;
+    vec3 d = abs(p) - b;
     float dist = length(max(d, vec3(0.))) + min(max(d.x, max(d.y, d.z)), 0.);
 
-    vec3 grad = (d.x > d.y) && (d.x > d.z) ? vec3(1., 0., 0.) :
-        (d.y > d.z ? vec3(0., 1., 0.) : vec3(0., 0., 1.));
+    vec3 grad = (d.x > d.y) && (d.x > d.z) ? vec3(1., 0., 0.) : (d.y > d.z ? vec3(0., 1., 0.) : vec3(0., 0., 1.));
 
-    if (d.x > 0. || d.y > 0. || d.z > 0.)
-    {
+    if(d.x > 0. || d.y > 0. || d.z > 0.) {
         d = max(d, 0.);
         grad = d / length(d);
     }
@@ -438,14 +446,18 @@ Implicit indexedLattice(vec3 p, int index, out Implicit solid) {
     Implicit _lattice_000 = TPMS_Gyroid(p_x, p_y, p_z, size, drop);
     Implicit lattice = Subtract(_lattice_000, u_bias);
     solid = lattice;
-    if (index == 0) return solid;
+    if(index == 0)
+        return solid;
     Implicit inverse = Multiply(-1.0, lattice);
-    if (index == 1) return inverse;
+    if(index == 1)
+        return inverse;
     Implicit _thin_000 = Abs(lattice);
     Implicit thin = Subtract(_thin_000, u_sdf_thickness * 0.5);
-    if (index == 2) return thin;
+    if(index == 2)
+        return thin;
     Implicit twin = Multiply(-1.0, thin);
-    if (index == 3) return twin;
+    if(index == 3)
+        return twin;
     return Sphere(p, vec3(0.0), 0.5);
 }
 
@@ -468,7 +480,7 @@ Implicit UnionEuclidean(Implicit a, Implicit b, float radius, out float blending
 
     Implicit op = Subtract(Max(r, ab), EuclideanNorm(ua, ub));
 
-    if (ab.Distance > 0.0) {
+    if(ab.Distance > 0.0) {
         op.Gradient = ab.Gradient;
     }
 
@@ -493,7 +505,7 @@ Implicit UnionEuclidean(Implicit a, Implicit b, Implicit c, float radius) {
     Implicit abc = Min(a, Min(b, c));
     Implicit op = Subtract(Max(r, abc), EuclideanNorm(ua, ub, uc));
 
-    if (abc.Distance > 0.0) {
+    if(abc.Distance > 0.0) {
         op.Gradient = abc.Gradient;
     }
 
@@ -515,8 +527,7 @@ Implicit UnionChamfer(Implicit iA, Implicit iB, float k) {
     return UnionChamfer(iA, iB, k, param);
 }
 
-Implicit UnionRound(Implicit iA, Implicit iB, float k, out float param)
-{
+Implicit UnionRound(Implicit iA, Implicit iB, float k, out float param) {
     Implicit h = Multiply(Max(Subtract(CreateImplicit(k), Abs(Subtract(iA, iB))), CreateImplicit()), 1.0 / k);
     Implicit h2 = Multiply(Multiply(h, h), 0.5);
     Implicit result = Subtract(Min(iA, iB), Multiply(h2, k * 0.5));
@@ -547,19 +558,19 @@ Implicit UnionSmoothMedial(Implicit a, Implicit b, float k) {
     return UnionSmoothMedial(a, b, k, unused);
 }
 
-Implicit UnionSmooth(Implicit a, Implicit b, float k){
+Implicit UnionSmooth(Implicit a, Implicit b, float k) {
     a.Distance -= k;
     b.Distance -= k;
     //   if (min(a.Distance, b.Distance) >= 0.)
     //       return (Min(a, b));
-    return Add(UnionSmoothMedial(a, b, abs(a.Distance + b.Distance) * abs(1.-dot(a.Gradient, b.Gradient))), k);
+    return Add(UnionSmoothMedial(a, b, abs(a.Distance + b.Distance) * abs(1. - dot(a.Gradient, b.Gradient))), k);
 }
 
-Implicit IntersectionSmoothMedial(Implicit iA, Implicit iB, float k){
+Implicit IntersectionSmoothMedial(Implicit iA, Implicit iB, float k) {
     return Negate(UnionSmoothMedial(Negate(iA), Negate(iB), k));
 }
 
-Implicit IntersectionSmooth(Implicit iA, Implicit iB, float k){
+Implicit IntersectionSmooth(Implicit iA, Implicit iB, float k) {
     return Negate(UnionSmooth(Negate(iA), Negate(iB), k));
 }
 
@@ -593,8 +604,8 @@ Implicit Sampson(Implicit a) {
 // Tree root
 Implicit map(vec3 p) {
     #if (STANDALONE==0)
-        float time = u_time;
-        vec2 resolution = u_resolution;
+    float time = u_time;
+    vec2 resolution = u_resolution;
     #endif
 
     float amp = 0.05;
