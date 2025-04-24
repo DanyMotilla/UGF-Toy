@@ -9,20 +9,31 @@ void main() {
         vec2 resolution = u_resolution;
         // Normalize coordinates to [-1, 1] range, maintaining aspect ratio
         vec2 p = (2.0 * gl_FragCoord.xy - resolution.xy) / min(resolution.x, resolution.y);
-        float rad = 1.25;
-        vec3 ro = vec3(rad*cos(0.0), rad*sin(0.0), 0.7);
-        vec3 ta = vec3(0.0);
+        
+        // Easy camera controls
+        float camDist = 1.5;
+        float camHeight = 0.8;
+        float camAngle = 0.7;
+        float camFOV = 1.5;        // Wider view
+        
+        // Camera setup - using controls
+        vec3 ro = vec3(
+            camDist * sin(camAngle),    // X position
+            camDist * cos(camAngle),    // Y position
+            camDist * camHeight         // Z position
+        );
+        vec3 ta = vec3(0.0, 0.0, 0.0);  // Look at origin
         
         // Camera matrix
         vec3 ww = normalize(ta - ro);
         vec3 uu = normalize(cross(ww, vec3(0.0, 0.0, 1.0)));
         vec3 vv = normalize(cross(uu, ww));
 
-        // Create view ray
-        vec3 rd = normalize(p.x*uu + p.y*vv + 1.5*ww);
+        // Create view ray with controlled FOV
+        vec3 rd = normalize(p.x*uu + p.y*vv + camFOV*ww);
 
-        // Raymarch
-        const float tmax = 2.5;
+        // Raymarch with increased bounds
+        const float tmax = 8.0;  // Much larger bounds
         float t = 0.0;
         Implicit hit;
         for(int i=0; i<256; i++) {

@@ -601,6 +601,111 @@ Implicit Sampson(Implicit a) {
     return Multiply(1.0 / length(a.Gradient), a);
 }
 
+// Rotation matrices for vec3
+vec3 rotateX(vec3 p, float angle) {
+    float c = cos(angle);
+    float s = sin(angle);
+    return vec3(
+        p.x,
+        c * p.y - s * p.z,
+        s * p.y + c * p.z
+    );
+}
+
+vec3 rotateY(vec3 p, float angle) {
+    float c = cos(angle);
+    float s = sin(angle);
+    return vec3(
+        c * p.x + s * p.z,
+        p.y,
+        -s * p.x + c * p.z
+    );
+}
+
+// Clam Shell SDF
+
+Implicit clamShellSDF(vec3 p) {
+
+    // Object controls
+    float objScale = 0.5;     // Larger scale
+    vec3 objOffset = vec3(0.0, 0.0, 0.0);  // Centered
+    vec3 objSize = vec3(1.5, 1.5, 1.5);    // Equal dimensions
+    float chamferDepth = 0.8; // Chamfer depth parameter
+    
+    // Apply transformations
+    vec3 pScaled = (p - objOffset) / objScale;  // Scale and position
+    
+    // Box dimensions
+    vec3 boxSize = objSize * 0.5;  // Half-size for centering
+    
+    // Step 1: Create all six planes for a complete box
+    // Top and bottom
+    Implicit topPlane = Plane(pScaled, 
+        vec3(0.0, boxSize.y, 0.0),
+        vec3(0.0, 1.0, 0.0)
+    );
+    Implicit bottomPlane = Plane(pScaled, 
+        vec3(0.0, -boxSize.y, 0.0),
+        vec3(0.0, -1.0, 0.0)
+    );
+    
+    // Left and right
+    Implicit rightPlane = Plane(pScaled,
+        vec3(boxSize.x, 0.0, 0.0),
+        vec3(1.0, 0.0, 0.0)
+    );
+    Implicit leftPlane = Plane(pScaled,
+        vec3(-boxSize.x, 0.0, 0.0),
+        vec3(-1.0, 0.0, 0.0)
+    );
+    
+    // Front and back
+    Implicit frontPlane = Plane(pScaled,
+        vec3(0.0, 0.0, boxSize.z),
+        vec3(0.0, 0.0, 1.0)
+    );
+    Implicit backPlane = Plane(pScaled,
+        vec3(0.0, 0.0, -boxSize.z),
+        vec3(0.0, 0.0, -1.0)
+    );
+    
+    // Step 2: Create chamfered edges by offsetting intersections
+    Implicit topRightEdge = Max(
+        Max(topPlane, rightPlane),
+        Add(
+            Add(topPlane, rightPlane),  // Sum of the two planes
+            CreateImplicit(chamferDepth) // Offset by chamfer depth
+        )
+    );
+    
+    Implicit topFrontEdge = Max(
+        Max(topPlane, frontPlane),
+        Add(
+            Add(topPlane, frontPlane),
+            CreateImplicit(chamferDepth)
+        )
+    );
+    
+    Implicit rightFrontEdge = Max(
+        Max(rightPlane, frontPlane),
+        Add(
+            Add(rightPlane, frontPlane),
+            CreateImplicit(chamferDepth)
+        )
+    );
+    
+    // Step 3: Combine all edges and remaining planes
+    Implicit result = Max(
+        Max(
+            Max(topRightEdge, topFrontEdge),
+            Max(rightFrontEdge, backPlane)
+        ),
+        Max(leftPlane, bottomPlane)
+    );
+    
+    return Sampson(result);
+}
+
 // Tree root
 Implicit map(vec3 p) {
     #if (STANDALONE==0)
@@ -608,36 +713,7 @@ Implicit map(vec3 p) {
     vec2 resolution = u_resolution;
     #endif
 
-    float amp = 0.05;
-    vec3 pOrig = p * vec3(1. + amp * cos(time), 1. + amp * cos(time), 1. + amp * sin(time));
-    p = pOrig * u_count;
-
-    // Bounds
-    vec3 size = vec3(u_size_x, u_size_y, u_size_z);
-    float thickness = u_sdf_thickness;
-    float bias = u_bias;
-
-    // Drop factors
-    float drop_yz = u_drop_yz;
-    float drop_zx = u_drop_zx;
-    float drop_xy = u_drop_xy;
-
-    // Variant selection
-    int variantIndex = u_variantIndex;
-
-    Implicit base;
-    Implicit scaled = Divide(scaledLattice(p, variantIndex, base), u_count);
-    Implicit merged = scaled;
-
-    Implicit bounds = BoxCenter(pOrig + center, center, 0.1 * vec3(u_size_x, u_size_y, u_size_z));
-
-    // Apply bump effect (distance only)
-    float bumpOffset = 0.05;
-    float bump = pow(abs(cos((1.5 * time + p.z) * 0.4)), 400.);
-    merged.Distance -= bump * bumpOffset;
-
-    // Combine with bounds (distance only)
-    return Max(merged, bounds);
+    return clamShellSDF(p);
 }
 
 #endif // IMPLICIT_GLSL
