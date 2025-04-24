@@ -623,14 +623,19 @@ vec3 rotateY(vec3 p, float angle) {
 }
 
 // Clam Shell SDF
-
 Implicit clamShellSDF(vec3 p) {
-
     // Object controls
-    float objScale = 0.5;     // Larger scale
-    vec3 objOffset = vec3(0.0, 0.0, 0.0);  // Centered
-    vec3 objSize = vec3(1.5, 1.5, 1.5);    // Equal dimensions
-    float chamferDepth = 0.8; // Chamfer depth parameter
+    float objScale = 0.5;
+    vec3 objOffset = vec3(0.0, 0.0, 0.0);
+    vec3 objSize = vec3(1.5, 1.5, 1.5);
+    float chamferDepth = 0.5;
+    float wallThickness = 0.1;
+    float shellBias = 0.0;
+    
+    // Cut controls
+    vec3 cutPosition = vec3(0.0, 0.5, 0.0);
+    vec3 cutNormal = normalize(vec3(0.0, 0.0, -1.0));  // Direction of cut
+    float cutOffset = 0.0;  // How far to move the cut plane
     
     // Apply transformations
     vec3 pScaled = (p - objOffset) / objScale;  // Scale and position
@@ -695,7 +700,7 @@ Implicit clamShellSDF(vec3 p) {
     );
     
     // Step 3: Combine all edges and remaining planes
-    Implicit result = Max(
+    Implicit solidBox = Max(
         Max(
             Max(topRightEdge, topFrontEdge),
             Max(rightFrontEdge, backPlane)
@@ -703,7 +708,16 @@ Implicit clamShellSDF(vec3 p) {
         Max(leftPlane, bottomPlane)
     );
     
-    return Sampson(result);
+    // Step 4: Create hollow box using Shell operation
+    Implicit hollowBox = Shell(solidBox, wallThickness, shellBias);
+    
+    // Step 5: Create cutting plane
+    Implicit cutPlane = Plane(pScaled - cutPosition, vec3(0.0), cutNormal);
+    
+    // Step 6: Apply cut using Boolean difference (A - B = A ∧ -B)
+    Implicit cutBox = Max(hollowBox, Negate(cutPlane));
+    
+    return Sampson(cutBox);
 }
 
 // Tree root
