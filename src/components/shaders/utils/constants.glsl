@@ -31,6 +31,10 @@ uniform vec3 u_color;
 uniform vec2 u_resolution;
 uniform vec3 u_cameraPos;
 
+// Mouse control uniforms
+uniform float u_mouse_X;
+uniform float u_mouse_Y;
+
 // Raymarching uniforms
 uniform float u_raymarchSteps;
 uniform float u_raymarchEpsilon;

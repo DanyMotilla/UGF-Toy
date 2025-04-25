@@ -26,6 +26,8 @@ interface RaymarchUniforms {
     [key: string]: THREE.IUniform<any>;
     u_resolution: THREE.IUniform<THREE.Vector2>;
     u_cameraPos: THREE.IUniform<THREE.Vector3>;
+    u_mouse_X: THREE.IUniform<number>;
+    u_mouse_Y: THREE.IUniform<number>;
     u_raymarchSteps: THREE.IUniform<number>;
     u_raymarchEpsilon: THREE.IUniform<number>;
     u_count: THREE.IUniform<number>;
@@ -64,6 +66,8 @@ export const createUniforms = (controls: Controls, size: { width: number, height
     // Raymarching uniforms
     u_resolution: { value: new THREE.Vector2(size.width, size.height) },
     u_cameraPos: { value: camera.position },
+    u_mouse_X: { value: 0 },
+    u_mouse_Y: { value: 0 },
     u_raymarchSteps: { value: controls.raymarchSteps },
     u_raymarchEpsilon: { value: controls.raymarchEpsilon },
     u_count: { value: controls.count },

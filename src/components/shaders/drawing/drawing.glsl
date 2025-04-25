@@ -104,22 +104,33 @@ float getRaymarchDistance(vec3 p) {
 }
 
 vec3 calcNormal(in vec3 pos) {
-    vec2 e = vec2(1.0,-1.0)*0.5773;
-    const float eps = 0.0005;
-    return normalize(e.xyy*map(pos + e.xyy*eps).Distance +
-                    e.yyx*map(pos + e.yyx*eps).Distance +
-                    e.yxy*map(pos + e.yxy*eps).Distance +
-                    e.xxx*map(pos + e.xxx*eps).Distance);
+    const float eps = 0.0002;  // Smaller epsilon for more precise normals
+    const vec2 h = vec2(eps, 0.0);
+    
+    // Use central differences for more accurate normals
+    return normalize(vec3(
+        map(pos + h.xyy).Distance - map(pos - h.xyy).Distance,
+        map(pos + h.yxy).Distance - map(pos - h.yxy).Distance,
+        map(pos + h.yyx).Distance - map(pos - h.yyx).Distance
+    ));
 }
 
 float calcSoftshadow(in vec3 ro, in vec3 rd, float mint, float tmax) {
     float res = 1.0;
     float t = mint;
-    for(int i=0; i<64; i++) {
+    float ph = 1e10; // Previous height
+    
+    for(int i=0; i<128; i++) {
         float h = getRaymarchDistance(ro + rd*t);
-        res = min(res, 8.0*h/t);
-        t += clamp(h, 0.02, 0.10);
-        if(res < 0.005 || t > tmax) break;
+        
+        // Improved shadow softness calculation
+        float y = h*h/(2.0*ph);
+        float d = sqrt(h*h-y*y);
+        res = min(res, 10.0*d/max(0.0,t-y));
+        ph = h;
+        
+        t += h * 0.5;  // Smaller step size for better quality
+        if(res < 0.0001 || t > tmax) break;
     }
     return clamp(res, 0.0, 1.0);
 }
@@ -127,14 +138,16 @@ float calcSoftshadow(in vec3 ro, in vec3 rd, float mint, float tmax) {
 float calcOcclusion(in vec3 pos, in vec3 nor) {
     float occ = 0.0;
     float sca = 1.0;
-    for(int i=0; i<5; i++) {
-        float hr = 0.01 + 0.15*float(i)/4.0;
+    
+    // Increased samples and adjusted parameters
+    for(int i=0; i<8; i++) {
+        float hr = 0.02 + 0.2*float(i)/7.0;
         vec3 aopos = nor * hr + pos;
         float dd = getRaymarchDistance(aopos);
         occ += -(dd-hr)*sca;
-        sca *= 0.95;
+        sca *= 0.85;  // Slower falloff
     }
-    return clamp(1.0 - occ*1.5, 0.0, 1.0);
+    return clamp(1.0 - occ*1.0, 0.0, 1.0);  // Reduced strength multiplier
 }
 
 vec4 DrawVectorField(vec3 p, ColorImplicit iImplicit, float iSpacing, float iLineHalfThick, vec4 iColor)

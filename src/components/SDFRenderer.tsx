@@ -7,6 +7,7 @@ import { createUniforms } from './shaders/utils/uniforms.ts';
 import { createControls } from './controls';
 import vertexShader from './shaders/vertex.glsl';
 import fragmentShader from './shaders/fragment.glsl';
+import { ThreeEvent } from '@react-three/fiber';
 
 // Create a custom shader material using @react-three/drei's shaderMaterial
 const SDFMaterial = shaderMaterial(
@@ -16,6 +17,9 @@ const SDFMaterial = shaderMaterial(
         u_mode: { value: 0 },
         u_resolution: { value: new THREE.Vector2() },
         u_cameraPos: { value: new THREE.Vector3() },
+        u_mouse_X: { value: 0.0 },
+        u_mouse_Y: { value: 0.0 },
+        u_rotation_speed: { value: 1.0 },
         u_effectType: { value: 0 },
         u_sdfType: { value: 0 },
         u_scale: { value: 1.0 },
@@ -239,15 +243,80 @@ const SDFRenderer = () => {
 
 // Raymarching mode component
 const RaymarchScene = ({ uniforms }: { uniforms: { [key: string]: THREE.IUniform<any> } }) => {
+    const [isDragging, setIsDragging] = useState(false);
+    const [previousMouseX, setPreviousMouseX] = useState(0);
+    const [previousMouseY, setPreviousMouseY] = useState(0);
+    const materialRef = useRef<THREE.ShaderMaterial | null>(null);
+
     const material = useMemo(() => {
         const mat = new SDFMaterial();
         mat.uniforms = uniforms;
+        materialRef.current = mat;
         return mat;
     }, [uniforms]);
 
+    useEffect(() => {
+        const handleGlobalPointerMove = (event: PointerEvent) => {
+            if (isDragging && materialRef.current) {
+                const sensitivity = 0.01;
+                const deltaX = (event.clientX - previousMouseX) * sensitivity;
+                const deltaY = (event.clientY - previousMouseY) * sensitivity;
+
+                const uniforms = materialRef.current.uniforms;
+                if (uniforms.u_mouse_X && uniforms.u_mouse_Y) {
+                    uniforms.u_mouse_X.value += deltaX;
+                    uniforms.u_mouse_Y.value += deltaY;
+                }
+
+                setPreviousMouseX(event.clientX);
+                setPreviousMouseY(event.clientY);
+            }
+        };
+
+        const handleGlobalPointerUp = () => {
+            setIsDragging(false);
+        };
+
+        // Add window-level listeners when dragging starts
+        if (isDragging) {
+            window.addEventListener('pointermove', handleGlobalPointerMove);
+            window.addEventListener('pointerup', handleGlobalPointerUp);
+            window.addEventListener('pointercancel', handleGlobalPointerUp);
+        }
+
+        // Cleanup listeners
+        return () => {
+            window.removeEventListener('pointermove', handleGlobalPointerMove);
+            window.removeEventListener('pointerup', handleGlobalPointerUp);
+            window.removeEventListener('pointercancel', handleGlobalPointerUp);
+        };
+    }, [isDragging, previousMouseX, previousMouseY]);
+
+    const handlePointerDown = (event: ThreeEvent<PointerEvent>) => {
+        const target = event.target as HTMLElement;
+        if (target) {
+            target.setPointerCapture(event.pointerId);
+        }
+        setIsDragging(true);
+        setPreviousMouseX(event.clientX);
+        setPreviousMouseY(event.clientY);
+    };
+
+    const handlePointerMove = () => {};
+
+    const handlePointerUp = () => {
+        setIsDragging(false);
+    };
+
     // Create a full-screen quad for raymarching
     return (
-        <mesh position={[0, 0, -1]}>
+        <mesh 
+            position={[0, 0, -1]}
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            onPointerLeave={handlePointerUp}
+        >
             <planeGeometry args={[10, 10]} />
             <primitive object={material} attach="material" />
         </mesh>

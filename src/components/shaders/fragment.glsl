@@ -10,21 +10,25 @@ void main() {
         // Normalize coordinates to [-1, 1] range, maintaining aspect ratio
         vec2 p = (2.0 * gl_FragCoord.xy - resolution.xy) / min(resolution.x, resolution.y);
         
-        // Easy camera controls
-        float camDist = 1.5;
-        float camHeight = 0.8;
-        float camAngle = 0.7;
-        float camFOV = 1.5;        // Wider view
+        // Camera controls with mouse rotation
+        float camDist = 2.0;  // Increased distance for better view
+        float camFOV = 1.5;
         
-        // Camera setup - using controls
+        // Convert mouse coordinates to spherical coordinates
+        float theta = u_mouse_X;  // Horizontal rotation around Y axis
+        float phi = u_mouse_Y;    // Vertical rotation
+        phi = clamp(phi, -1.57, 1.57);  // Clamp to [-π/2, π/2] to prevent flipping
+        
+        // Camera position using spherical coordinates
+        // We swap Y and Z to get a side view by default
         vec3 ro = vec3(
-            camDist * sin(camAngle),    // X position
-            camDist * cos(camAngle),    // Y position
-            camDist * camHeight         // Z position
+            camDist * cos(phi) * sin(theta),  // x = r * cos(φ) * sin(θ)
+            camDist * cos(phi) * cos(theta),  // y = r * cos(φ) * cos(θ)
+            camDist * sin(phi)                // z = r * sin(φ)
         );
         vec3 ta = vec3(0.0, 0.0, 0.0);  // Look at origin
         
-        // Camera matrix
+        // Camera matrix - using world up vector (0,0,1) for side view
         vec3 ww = normalize(ta - ro);
         vec3 uu = normalize(cross(ww, vec3(0.0, 0.0, 1.0)));
         vec3 vv = normalize(cross(uu, ww));
@@ -32,30 +36,49 @@ void main() {
         // Create view ray with controlled FOV
         vec3 rd = normalize(p.x*uu + p.y*vv + camFOV*ww);
 
-        // Raymarch with increased bounds
-        const float tmax = 8.0;  // Much larger bounds
+        // Raymarch with increased precision
+        const float tmax = 8.0;
         float t = 0.0;
+        float precis = 0.0001;  // Increased precision threshold
+        
         Implicit hit;
         for(int i=0; i<256; i++) {
             vec3 pos = ro + t*rd;
             hit = map(pos);
-            if(hit.Distance < 0.0001 || t > tmax) break;
-            t += hit.Distance * 0.45;
+            if(hit.Distance < precis || t > tmax) break;
+            t += hit.Distance * 0.35;  // Smaller step size for more accuracy
         }
 
         // Background color matching #242424 (36/255 = 0.141176471)
         vec3 col = vec3(0.141176471);
-        if(t < tmax) {
+        
+        // Only render surface if we hit something within max distance
+        // and the hit is precise enough
+        if(t < tmax && hit.Distance < precis) {
             vec3 pos = ro + t*rd;
             vec3 nor = calcNormal(pos);
-            vec3 lig = normalize(vec3(0.6, 0.0, 0.4));
             
+            // World-space light direction (fixed behind and above)
+            vec3 lig = normalize(vec3(-1.0, -0.5, 2.0));
+            
+            // Ambient term
+            float amb = 0.2;
+            
+            // Diffuse term
             float dif = clamp(dot(nor, lig), 0.0, 1.0);
             float occ = calcOcclusion(pos, nor);
-            if(dif > 0.001) dif *= calcSoftshadow(pos, lig, 0.001, 1.0);
+            if(dif > 0.001) dif *= calcSoftshadow(pos, lig, 0.002, 2.0);
             
-            // Simple material shading
-            col = vec3(0.8) * dif * occ;
+            // Specular term
+            vec3 hal = normalize(lig - rd);  // Half vector
+            float spe = pow(clamp(dot(nor, hal), 0.0, 1.0), 16.0);
+            
+            // Material properties
+            vec3 albedo = vec3(0.8);
+            vec3 specColor = vec3(0.6);
+            
+            // Combine terms
+            col = albedo * (amb + dif * occ) + specColor * spe * dif * occ;
         }
 
         gl_FragColor = vec4(col, 1.0);

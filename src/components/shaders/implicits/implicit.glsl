@@ -622,6 +622,35 @@ vec3 rotateY(vec3 p, float angle) {
     );
 }
 
+// This is just a test , I still intend to do the full clamshell from the book.
+// Create a compound cut plane with flat and sloped sections
+Implicit createCompoundCut(vec3 p, vec3 center, float slope) {
+    // Parameters for the compound cut
+    float splitX = 0.0;  // X position where slope starts
+    
+    // Create flat plane (vertical cut)
+    Implicit flatPlane = Plane(p, 
+        vec3(splitX, 0.0, 0.0),  // Center at split point
+        vec3(0.0, 0.0, -1.0)     // Facing -Z direction
+    );
+    
+    // Create sloped plane
+    Implicit slopedPlane = Plane(p,
+        vec3(splitX, 0.0, 0.0),           // Center at split point
+        normalize(vec3(0.0, slope, -1.0))  // Normal with slope in Y
+    );
+    
+    // Use position.x to blend between planes
+    // Return flat plane for x < splitX, sloped plane for x > splitX
+    return Min(
+        flatPlane,  // Left side (flat)
+        Max(        // Right side (sloped)
+            slopedPlane,
+            Plane(p, vec3(splitX, 0.0, 0.0), vec3(-1.0, 0.0, 0.0))  // Vertical dividing plane
+        )
+    );
+}
+
 // Clam Shell SDF
 Implicit clamShellSDF(vec3 p) {
     // Object controls
@@ -633,9 +662,8 @@ Implicit clamShellSDF(vec3 p) {
     float shellBias = 0.0;
     
     // Cut controls
-    vec3 cutPosition = vec3(0.0, 0.5, 0.0);
-    vec3 cutNormal = normalize(vec3(0.0, 0.0, -1.0));  // Direction of cut
-    float cutOffset = 0.0;  // How far to move the cut plane
+    vec3 cutCenter = vec3(0.0, 0.5, 0.0);  // Center of the cut
+    float cutSlope = 0.5;                   // Slope of the angled section
     
     // Apply transformations
     vec3 pScaled = (p - objOffset) / objScale;  // Scale and position
@@ -711,10 +739,10 @@ Implicit clamShellSDF(vec3 p) {
     // Step 4: Create hollow box using Shell operation
     Implicit hollowBox = Shell(solidBox, wallThickness, shellBias);
     
-    // Step 5: Create cutting plane
-    Implicit cutPlane = Plane(pScaled - cutPosition, vec3(0.0), cutNormal);
+    // Step 5: Create compound cutting plane
+    Implicit cutPlane = createCompoundCut(pScaled, cutCenter, cutSlope);
     
-    // Step 6: Apply cut using Boolean difference (A - B = A ∧ -B)
+    // Step 6: Apply cut using Boolean difference
     Implicit cutBox = Max(hollowBox, Negate(cutPlane));
     
     return Sampson(cutBox);
