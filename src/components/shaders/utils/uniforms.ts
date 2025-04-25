@@ -30,16 +30,6 @@ interface RaymarchUniforms {
     u_mouse_Y: THREE.IUniform<number>;
     u_raymarchSteps: THREE.IUniform<number>;
     u_raymarchEpsilon: THREE.IUniform<number>;
-    u_count: THREE.IUniform<number>;
-    u_size_x: THREE.IUniform<number>;
-    u_size_y: THREE.IUniform<number>;
-    u_size_z: THREE.IUniform<number>;
-    u_sdf_thickness: THREE.IUniform<number>;
-    u_bias: THREE.IUniform<number>;
-    u_drop_yz: THREE.IUniform<number>;
-    u_drop_zx: THREE.IUniform<number>;
-    u_drop_xy: THREE.IUniform<number>;
-    u_variantIndex: THREE.IUniform<number>;
 }
 
 export interface ShaderUniforms extends BaseUniforms, MeshUniforms, RaymarchUniforms {
@@ -70,14 +60,4 @@ export const createUniforms = (controls: Controls, size: { width: number, height
     u_mouse_Y: { value: 0 },
     u_raymarchSteps: { value: controls.raymarchSteps },
     u_raymarchEpsilon: { value: controls.raymarchEpsilon },
-    u_count: { value: controls.count },
-    u_size_x: { value: controls.size_x },
-    u_size_y: { value: controls.size_y },
-    u_size_z: { value: controls.size_z },
-    u_sdf_thickness: { value: controls.sdf_thickness },
-    u_bias: { value: controls.bias },
-    u_drop_yz: { value: controls.drop_yz },
-    u_drop_zx: { value: controls.drop_zx },
-    u_drop_xy: { value: controls.drop_xy },
-    u_variantIndex: { value: controls.variantIndex }
 });

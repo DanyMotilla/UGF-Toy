@@ -31,17 +31,7 @@ const SDFMaterial = shaderMaterial(
         u_effectStrength: { value: 0.5 },
         u_contrast: { value: 1.0 },
         u_raymarchSteps: { value: 100 },
-        u_raymarchEpsilon: { value: 0.001 },
-        u_count: { value: 1.5 },
-        u_size_x: { value: 5.0 },
-        u_size_y: { value: 5.0 },
-        u_size_z: { value: 5.0 },
-        u_sdf_thickness: { value: 0.8 },
-        u_bias: { value: -0.19 },
-        u_drop_yz: { value: 1.0 },
-        u_drop_zx: { value: 1.0 },
-        u_drop_xy: { value: 0.65 },
-        u_variantIndex: { value: 0 }
+        u_raymarchEpsilon: { value: 0.001 }
     },
     // Vertex shader
     vertexShader,

@@ -64,48 +64,6 @@ export const createControls = () => {
         raymarchEpsilon: { 
             value: 0.001, min: 0.0001, max: 0.01, step: 0.0001,
             render: (get: any) => get('mode') === 'Raymarching'
-        },
-
-        // SDF parameters
-        count: {
-            value: 1.5, min: 0.5, max: 5, step: 0.1,
-            render: (get: any) => get('mode') === 'Raymarching'
-        },
-        size_x: {
-            value: 5.0, min: 1, max: 20, step: 0.1,
-            render: (get: any) => get('mode') === 'Raymarching'
-        },
-        size_y: {
-            value: 5.0, min: 1, max: 20, step: 0.1,
-            render: (get: any) => get('mode') === 'Raymarching'
-        },
-        size_z: {
-            value: 5.0, min: 1, max: 20, step: 0.1,
-            render: (get: any) => get('mode') === 'Raymarching'
-        },
-        sdf_thickness: {
-            value: 0.8, min: 0.1, max: 2, step: 0.01,
-            render: (get: any) => get('mode') === 'Raymarching'
-        },
-        bias: {
-            value: -0.19, min: -1, max: 1, step: 0.01,
-            render: (get: any) => get('mode') === 'Raymarching'
-        },
-        drop_yz: {
-            value: 1.0, min: 0, max: 2, step: 0.01,
-            render: (get: any) => get('mode') === 'Raymarching'
-        },
-        drop_zx: {
-            value: 1.0, min: 0, max: 2, step: 0.01,
-            render: (get: any) => get('mode') === 'Raymarching'
-        },
-        drop_xy: {
-            value: 0.65, min: 0, max: 2, step: 0.01,
-            render: (get: any) => get('mode') === 'Raymarching'
-        },
-        variantIndex: {
-            value: 0, min: 0, max: 4, step: 1,
-            render: (get: any) => get('mode') === 'Raymarching'
         }
     } as const;
 

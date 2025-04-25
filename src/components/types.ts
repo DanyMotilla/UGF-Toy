@@ -24,16 +24,6 @@ export interface MeshControls {
 export interface RaymarchControls {
     raymarchSteps: number;
     raymarchEpsilon: number;
-    count: number;
-    size_x: number;
-    size_y: number;
-    size_z: number;
-    sdf_thickness: number;
-    bias: number;
-    drop_yz: number;
-    drop_zx: number;
-    drop_xy: number;
-    variantIndex: number;
 }
 
 export type Controls = BaseControls & MeshControls & RaymarchControls;
