@@ -49,8 +49,8 @@ void main() {
             t += hit.Distance * 0.35;  // Smaller step size for more accuracy
         }
 
-        // Background color matching #242424 (36/255 = 0.141176471)
-        vec3 col = vec3(0.141176471);
+        // Background color matching Gruvbox dark (#282828 = 40/255 = 0.156862745)
+        vec3 col = vec3(0.156862745);
         
         // Only render surface if we hit something within max distance
         // and the hit is precise enough
@@ -61,24 +61,36 @@ void main() {
             // World-space light direction (fixed behind and above)
             vec3 lig = normalize(vec3(-1.0, -0.5, 2.0));
             
-            // Ambient term
-            float amb = 0.2;
+            // Ambient term with warm vanilla tint
+            vec3 ambColor = vec3(0.98, 0.95, 0.87);
+            float ambStr = 0.25;
+            vec3 amb = ambColor * ambStr;
             
             // Diffuse term
             float dif = clamp(dot(nor, lig), 0.0, 1.0);
-            float occ = calcOcclusion(pos, nor);
-            if(dif > 0.001) dif *= calcSoftshadow(pos, lig, 0.002, 2.0);
             
-            // Specular term
-            vec3 hal = normalize(lig - rd);  // Half vector
-            float spe = pow(clamp(dot(nor, hal), 0.0, 1.0), 16.0);
+            // Occlusion with warm tint
+            vec3 occColor = vec3(0.95, 0.85, 0.7);  // Warm cream
+            float occ = calcOcclusion(pos, nor);
+            
+            // Soft shadows
+            float shadow = 1.0;
+            if(dif > 0.001) {
+                shadow = calcSoftshadow(pos, lig, 0.002, 2.0);
+                dif *= shadow;
+            }
+            
+            // Specular term with creamy highlights
+            vec3 hal = normalize(lig - rd);
+            float spe = pow(clamp(dot(nor, hal), 0.0, 1.0), 64.0);  // Sharp for sugar-like sparkle
             
             // Material properties
-            vec3 albedo = vec3(0.8);
-            vec3 specColor = vec3(0.6);
+            vec3 albedo = vec3(0.95, 0.92, 0.85);     // Vanilla cream
+            vec3 specColor = vec3(1.0, 0.98, 0.95);   // Warm white specular
             
             // Combine terms
-            col = albedo * (amb + dif * occ) + specColor * spe * dif * occ;
+            col = albedo * (amb + dif * mix(occColor, vec3(1.0), occ))
+                + specColor * spe * dif * shadow;
         }
 
         gl_FragColor = vec4(col, 1.0);

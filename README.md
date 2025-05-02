@@ -1,36 +1,54 @@
-# YARN - WebGL SDF Renderer
+# UGF Toy
 
-This project aims to consolidate different versions of the UGF-oriented modeling library from ShaderToys and LatticeRobot into a single, clean implementation. It provides a modern, React-based interface for real-time SDF (Signed Distance Field) rendering using WebGL.
+A real-time shader editor for exploring Unit Gradient Fields (UGFs) with the latest version of UGF Library 
+
+by Blake Courter and Dany Motilla.
 
 ## Features
 
-- Real-time SDF rendering using custom GLSL shaders
-- Interactive 3D scene manipulation
-- TypeScript + React implementation for type safety and component reusability
-- Vite-powered development environment with HMR (Hot Module Replacement)
+- Real-time GLSL shader editing
+- Live preview of shader changes
+- Syntax highlighting and code completion
+- Documentation viewer
+- Customizable shader parameters
 
-## Technology Stack
+## Getting Started
 
-- React + TypeScript
-- WebGL / GLSL Shaders
-- Vite build system
-- Modern ESLint configuration
+### Prerequisites
 
-## Development
+- Node.js 18.x or later
+- npm 9.x or later
 
-This project uses Vite with TypeScript and React. To get started:
+### Installation
 
-1. Install dependencies:
+1. Clone the repository
+
+
+2. Install dependencies
 ```bash
 npm install
 ```
 
-2. Start the development server:
+3. Start the development server
 ```bash
 npm run dev
 ```
 
-3. Build for production:
+4. Start the code editor server
 ```bash
-npm run build
+node server.js
 ```
+
+The application will be available at `http://localhost:3333`
+The code editor server will be running at `http://localhost:3001`
+
+## Built With
+
+- [React](https://reactjs.org/) - UI Framework
+- [Three.js](https://threejs.org/) - 3D Graphics
+- [Monaco Editor](https://microsoft.github.io/monaco-editor/) - Code Editor
+- [Vite](https://vitejs.dev/) - Build Tool
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

@@ -658,7 +658,7 @@ Implicit clamShellSDF(vec3 p) {
     vec3 objOffset = vec3(0.0, 0.0, 0.0);
     vec3 objSize = vec3(1.5, 1.5, 1.5);
     float chamferDepth = 0.5;
-    float wallThickness = 0.1;
+    float wallThickness = 0.2;
     float shellBias = 0.0;
     
     // Cut controls

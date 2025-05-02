@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Scene from './components/Scene';
-import YarnLogo from './assets/react.png'; // Adjust path to your Yarn/logo SVG
+import YarnLogo from './assets/UGFToy.svg'; // Adjust path to your Yarn/logo SVG
 import './App.css';
 
 const App: React.FC = () => {

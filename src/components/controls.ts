@@ -6,11 +6,11 @@ export const createControls = () => {
     const controls = {
         // Mode and type controls
         mode: {
-            value: 'Mesh' as RenderMode,
+            value: 'Raymarching' as RenderMode,
             options: ['Raymarching', 'Mesh'] as RenderMode[],
         },
         effectType: {
-            value: 'Displacement' as EffectType,
+            value: 'Bump' as EffectType,
             options: ['Bump', 'Displacement'] as EffectType[],
             render: (get: any) => get('mode') === 'Mesh'
         },
@@ -22,7 +22,7 @@ export const createControls = () => {
 
         // Geometry and transformation
         scale: { 
-            value: 1.0, min: 0.1, max: 5, step: 0.1,
+            value: 5.0, min: 0.1, max: 5, step: 0.1,
             render: (get: any) => get('mode') === 'Mesh'
         },
         posX: { 
@@ -40,7 +40,7 @@ export const createControls = () => {
 
         // Material and effects
         color: { 
-            value: '#ff69b4',
+            value: '#b49e82',
             render: (get: any) => get('mode') === 'Mesh'
         },
         thickness: { 
