@@ -6,6 +6,23 @@
 
 void main() {
     if (u_mode == 0) { // Raymarching Mode
+
+        // Control plane rotation with time or mouse
+        float rotX = sin(iTime * 0.5) * 90.0;  // -90 to 90 degrees
+        float rotY = cos(iTime * 0.3) * 45.0;  // -45 to 45 degrees
+        float rotZ = 0.0;  // Keep Z rotation zero for simplicity
+        
+        // Calculate plane normal from rotation angles
+        vec3 planeNormal = calculatePlaneNormal(rotX, rotY, rotZ);
+
+        // Animate cut position with time
+        float cutPosition = sin(iTime * 0.2) * 0.5;  // -0.5 to 0.5
+        
+        // Visual options
+        bool showNormals = true;
+        bool showPlane = false;
+
+
         vec2 resolution = u_resolution;
         // Normalize coordinates to [-1, 1] range, maintaining aspect ratio
         vec2 p = (2.0 * gl_FragCoord.xy - resolution.xy) / min(resolution.x, resolution.y);

@@ -11,6 +11,13 @@
 #define SQRT2 1.41421356237
 #define SQRT3 1.73205080757
 
+#define MAX_STEPS 200
+#define MAX_DIST 100.0
+#define SURF_DIST 0.0005
+#define PLANE_SURF_DIST 0.0001  // Higher precision for plane detection
+#define PI 3.14159265359
+#define BINARY_SEARCH_STEPS 5   // Number of binary search refinement steps
+
 //======================================
 // UNIFORMS
 //======================================

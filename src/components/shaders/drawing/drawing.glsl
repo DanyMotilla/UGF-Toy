@@ -286,4 +286,273 @@ vec4 drawArrow(vec2 p, vec2 startPt, vec2 endPt, vec4 color, vec4 base) {
     return fillImplicit(tipColor, base);
 }
 
+//======================================
+// SDF SLICER
+//======================================
+
+// Helper function to convert degrees to radians
+float degToRad(float degrees) {
+    return degrees * PI / 180.0;
+}
+
+// Get rotation matrices
+mat3 rotationMatrixX(float angle) {
+    float rad = degToRad(angle);
+    float c = cos(rad);
+    float s = sin(rad);
+    return mat3(
+        1.0, 0.0, 0.0,
+        0.0, c, -s,
+        0.0, s, c
+    );
+}
+
+mat3 rotationMatrixY(float angle) {
+    float rad = degToRad(angle);
+    float c = cos(rad);
+    float s = sin(rad);
+    return mat3(
+        c, 0.0, s,
+        0.0, 1.0, 0.0,
+        -s, 0.0, c
+    );
+}
+
+mat3 rotationMatrixZ(float angle) {
+    float rad = degToRad(angle);
+    float c = cos(rad);
+    float s = sin(rad);
+    return mat3(
+        c, -s, 0.0,
+        s, c, 0.0,
+        0.0, 0.0, 1.0
+    );
+}
+
+// Calculate plane normal based on rotation angles
+vec3 calculatePlaneNormal(float rotX, float rotY, float rotZ) {
+    // Start with default normal (0,0,1)
+    vec3 normal = vec3(0.0, 0.0, 1.0);
+    
+    // Apply rotations in Z-Y-X order
+    normal = rotationMatrixZ(rotZ) * normal;
+    normal = rotationMatrixY(rotY) * normal;
+    normal = rotationMatrixX(rotX) * normal;
+    
+    return normalize(normal);
+}
+
+// Check if a point is beyond the cutting plane
+bool isBeyondCuttingPlane(vec3 p, vec3 planeNormal, float cutPosition) {
+    float dotProduct = dot(p, normalize(planeNormal));
+    return dotProduct < cutPosition;
+}
+
+// Distance to cutting plane (signed)
+float distanceToCuttingPlane(vec3 p, vec3 planeNormal, float cutPosition) {
+    return dot(p, normalize(planeNormal)) - cutPosition;
+}
+
+// Calculate normal using the gradient of the SDF
+vec3 getNormal(vec3 p, bool isInside) {
+    const float h = 0.001;
+    vec2 k = vec2(1.0, -1.0);
+    
+    // For exterior points, calculate normal as usual
+    if (!isInside) {
+        float px = map(p + vec3(h, 0.0, 0.0));
+        float nx = map(p - vec3(h, 0.0, 0.0));
+        float py = map(p + vec3(0.0, h, 0.0));
+        float ny = map(p - vec3(0.0, h, 0.0));
+        float pz = map(p + vec3(0.0, 0.0, h));
+        float nz = map(p - vec3(0.0, 0.0, h));
+        
+        return normalize(vec3(
+            px - nx,
+            py - ny,
+            pz - nz
+        ));
+    } 
+    // For interior points, invert the normal
+    else {
+        float px = map(p + vec3(h, 0.0, 0.0));
+        float nx = map(p - vec3(h, 0.0, 0.0));
+        float py = map(p + vec3(0.0, h, 0.0));
+        float ny = map(p - vec3(0.0, h, 0.0));
+        float pz = map(p + vec3(0.0, 0.0, h));
+        float nz = map(p - vec3(0.0, 0.0, h));
+        
+        return -normalize(vec3(
+            px - nx,
+            py - ny,
+            pz - nz
+        ));
+    }
+}
+
+// Apply Phong shading
+vec3 phongShading(vec3 point, vec3 normal, vec3 viewDirection, bool isInside) {
+    // Light position
+    vec3 lightPosition = vec3(2.0, 2.0, 2.0);
+
+    // Light parameters
+    vec3 lightColor = vec3(1.0, 1.0, 1.0);
+    float ambientStrength = 0.2;
+    float specularStrength = 0.5;
+    float shininess = 32.0;
+
+    // Material colors
+    vec3 outsideColor = vec3(0.8, 0.6, 0.2); // gold
+    vec3 insideColor = vec3(0.4, 0.3, 0.1);   // Dark gold
+
+    vec3 materialColor = isInside ? insideColor : outsideColor;
+
+    // Ambient light
+    vec3 ambient = ambientStrength * lightColor;
+
+    // Diffuse light
+    vec3 lightDirection = normalize(lightPosition - point);
+    float diff = max(dot(normal, lightDirection), 0.0);
+    vec3 diffuse = diff * lightColor;
+
+    // Specular light
+    vec3 reflectDir = reflect(-lightDirection, normal);
+    float spec = pow(max(dot(viewDirection, reflectDir), 0.0), shininess);
+    vec3 specular = specularStrength * spec * lightColor;
+
+    // Combine all lighting components
+    vec3 result = (ambient + diffuse + specular) * materialColor;
+    return result;
+}
+
+// Calculate plane color with enhanced edge highlight
+vec3 getPlaneColor(vec3 p, vec3 planeNormal, float cutPosition) {
+    // Base plane color (semi-transparent gold to match torus)
+    vec3 baseColor = vec3(0.8, 0.6, 0.2) * 0.3;
+    
+    // Calculate distance to the shape
+    float shapeDist = map(p);
+    
+    // Highlight edges - create a glow effect near the intersection
+    float edgeHighlight = smoothstep(0.05, 0.0, abs(shapeDist));
+    vec3 highlightColor = vec3(1.0, 0.9, 0.5); // Brighter gold for highlight
+    
+    // Mix base color with highlight
+    return mix(baseColor, highlightColor, edgeHighlight * 0.7);
+}
+
+// Structure for storing march results
+struct MarchResult {
+    float Distance;
+    bool isInside;
+    bool hitSomething;
+    bool hitPlane;
+    float planeSurfaceDistance; // Distance to the nearest surface at plane intersection
+};
+
+// Binary search refinement for exact plane intersection
+float refineIntersection(vec3 ro, vec3 rd, float t0, float t1, vec3 planeNormal, float cutPosition) {
+    float t = t0;
+    // Binary search for more accurate intersection
+    for (int i = 0; i < BINARY_SEARCH_STEPS; i++) {
+        float mid = (t0 + t1) * 0.5;
+        vec3 p = ro + rd * mid;
+        if (isBeyondCuttingPlane(p, planeNormal, cutPosition)) {
+            t0 = mid;
+        } else {
+            t1 = mid;
+        }
+    }
+    return (t0 + t1) * 0.5;
+}
+
+// Adaptive step size based on distance to cutting plane
+float getAdaptiveStepSize(float dist, float planeDist) {
+    float baseStep = abs(dist) * 0.9; // Original step calculation
+    float maxStep = 0.1; // Maximum allowed step size
+    float planeProximity = exp(-abs(planeDist) * 10.0); // Exponential falloff near plane
+    
+    // Reduce step size when near the cutting plane
+    return mix(baseStep, min(baseStep, 0.01), planeProximity);
+}
+
+// Enhanced raymarch function with improved cutting plane precision
+MarchResult raymarch(vec3 ro, vec3 rd, vec3 planeNormal, float cutPosition, bool showPlane) {
+    float depth = 0.0;
+    bool isInside = false;
+    bool hitPlane = false;
+    float planeSurfaceDist = MAX_DIST;
+    
+    // Initial values for plane intersection binary search
+    float lastBeforePlane = 0.0;
+    float firstAfterPlane = MAX_DIST;
+    bool crossedPlane = false;
+    
+    // Variables to track the nearest shape point near the cut plane
+    float minDistNearPlane = MAX_DIST;
+    
+    for(int i = 0; i < MAX_STEPS; i++) {
+        vec3 p = ro + rd * depth;
+        
+        // Calculate distance to the shape
+        float shapeDist = map(p);
+        
+        // Is point inside the shape?
+        isInside = shapeDist < 0.0;
+        
+        // Calculate distance to the cutting plane
+        float planeDist = distanceToCuttingPlane(p, planeNormal, cutPosition);
+        bool beyondPlane = planeDist < 0.0;
+        
+        // Track plane crossing for binary search refinement
+        if (!crossedPlane && i > 0) {
+            if (!beyondPlane) {
+                lastBeforePlane = depth;
+            } else if (lastBeforePlane > 0.0) {
+                firstAfterPlane = depth;
+                crossedPlane = true;
+            }
+        }
+        
+        // Track closest approach to shape near the plane
+        if (abs(planeDist) < 0.05 && abs(shapeDist) < minDistNearPlane) {
+            minDistNearPlane = abs(shapeDist);
+            planeSurfaceDist = abs(shapeDist);
+        }
+        
+        // If we're showing the plane and we're beyond it
+        if (showPlane && beyondPlane) {
+            // More precise check for plane intersection
+            float distToPlane = abs(planeDist);
+            if (distToPlane < PLANE_SURF_DIST) {
+                // Refine the intersection point if we've crossed the plane
+                if (crossedPlane) {
+                    depth = refineIntersection(ro, rd, lastBeforePlane, firstAfterPlane, planeNormal, cutPosition);
+                }
+                return MarchResult(depth, false, true, true, planeSurfaceDist);
+            }
+        }
+        
+        // If we're beyond the plane, we'll ignore the shape hit
+        if (beyondPlane) {
+            // Use smaller steps near the cutting plane for better accuracy
+            depth += max(0.005, abs(planeDist) * 0.3);
+            continue;
+        }
+        
+        // Check if we hit the shape surface
+        if (abs(shapeDist) < SURF_DIST) {
+            return MarchResult(depth, isInside, true, false, 0.0);
+        }
+        
+        // Calculate adaptive step size
+        float stepSize = getAdaptiveStepSize(shapeDist, planeDist);
+        depth += stepSize;
+        
+        if (depth > MAX_DIST) break;
+    }
+    
+    return MarchResult(MAX_DIST, false, false, false, MAX_DIST);
+}
+
 #endif // DRAWING_GLSL
