@@ -9,11 +9,14 @@
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  transition: background-color 0.5s ease-in-out;
 }
 
 .splash-logo {
-  width: 764px;
-  height: 218px;
+  max-width: 764px;
+  width: 90vw;
+  height: auto;
+  aspect-ratio: 764/218;
   opacity: 0.8;
   transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
 }

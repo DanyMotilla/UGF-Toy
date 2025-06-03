@@ -1,8 +1,8 @@
 import { Leva } from 'leva';
 import { Canvas } from '@react-three/fiber';
 import SDFRenderer from './SDFRenderer';
-import ShaderEditor from './ShaderEditor';
-import { gruvboxTheme } from './theme';
+import ShaderEditor from "@/features/shader-editor/components/ShaderEditor";
+import { gruvboxTheme } from '@/features/core/utils/theme';
 
 const getLevaScale = () => {
     if (typeof window === 'undefined') return 1;

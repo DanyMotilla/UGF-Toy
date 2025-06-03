@@ -1,7 +1,6 @@
 #ifndef DRAWING_GLSL
 #define DRAWING_GLSL
 
-#include "../utils/constants.glsl"
 #include "../implicits/implicit.glsl"
 #include "../implicits/colorImplicit.glsl"
 

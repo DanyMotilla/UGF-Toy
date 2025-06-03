@@ -1,7 +1,6 @@
 #ifndef VERTEX_GLSL
 #define VERTEX_GLSL
 
-#include "./utils/constants.glsl"
 #include "./drawing/drawing.glsl"
 
 void main() {

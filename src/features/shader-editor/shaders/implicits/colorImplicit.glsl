@@ -1,8 +1,6 @@
 #ifndef COLOR_IMPLICIT_GLSL
 #define COLOR_IMPLICIT_GLSL
 
-#include "../utils/constants.glsl"
-
 //======================================
 // COLOR IMPLICIT CLASS & FUNCTIONS
 //======================================

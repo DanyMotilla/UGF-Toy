@@ -1,37 +1,36 @@
 import { useState, useMemo, Suspense, useEffect, useRef } from 'react';
 import * as THREE from 'three';
-import { extend, type ThreeElements, useFrame, useThree } from '@react-three/fiber';
+import { extend, useFrame, useThree } from '@react-three/fiber';
 import { useControls } from 'leva';
 import { useGLTF, shaderMaterial, Html, OrbitControls, PerspectiveCamera } from '@react-three/drei';
-import { createUniforms } from './shaders/utils/uniforms.ts';
-import { createControls } from './controls';
-import vertexShader from './shaders/vertex.glsl';
-import fragmentShader from './shaders/fragment.glsl';
-import { ThreeEvent } from '@react-three/fiber';
+import { createUniforms } from '@/features/shader-editor/shaders/utils/uniforms';
+import { createControls } from '@/features/shader-editor/utils/controls';
+import vertexShader from '@/features/shader-editor/shaders/vertex.glsl';
+import fragmentShader from '@/features/shader-editor/shaders/fragment.glsl';
 
 // Create a custom shader material using @react-three/drei's shaderMaterial
 const SDFMaterial = shaderMaterial(
     // Initial uniforms - these will be overridden
     {
-        u_time: { value: 0 },
-        u_mode: { value: 0 },
-        u_resolution: { value: new THREE.Vector2() },
-        u_cameraPos: { value: new THREE.Vector3() },
-        u_mouse_X: { value: 0.0 },
-        u_mouse_Y: { value: 0.0 },
-        u_rotation_speed: { value: 1.0 },
-        u_effectType: { value: 0 },
-        u_sdfType: { value: 0 },
-        u_scale: { value: 1.0 },
-        u_posX: { value: 0.0 },
-        u_posY: { value: 0.0 },
-        u_posZ: { value: 0.0 },
-        u_color: { value: new THREE.Color('#ff69b4') },
-        u_thickness: { value: 0.1 },
-        u_effectStrength: { value: 0.5 },
-        u_contrast: { value: 1.0 },
-        u_raymarchSteps: { value: 100 },
-        u_raymarchEpsilon: { value: 0.001 }
+        u_time: { value: 0 } as THREE.IUniform<number>,
+        u_mode: { value: 0 } as THREE.IUniform<number>,
+        u_resolution: { value: [0, 0] } as THREE.IUniform<number[]>,
+        u_cameraPos: { value: [0, 0, 0] } as THREE.IUniform<number[]>,
+        u_mouse_X: { value: 0.0 } as THREE.IUniform<number>,
+        u_mouse_Y: { value: 0.0 } as THREE.IUniform<number>,
+        u_rotation_speed: { value: 1.0 } as THREE.IUniform<number>,
+        u_effectType: { value: 0 } as THREE.IUniform<number>,
+        u_sdfType: { value: 0 } as THREE.IUniform<number>,
+        u_scale: { value: 1.0 } as THREE.IUniform<number>,
+        u_posX: { value: 0.0 } as THREE.IUniform<number>,
+        u_posY: { value: 0.0 } as THREE.IUniform<number>,
+        u_posZ: { value: 0.0 } as THREE.IUniform<number>,
+        u_color: { value: new THREE.Color('#ff69b4') } as THREE.IUniform<THREE.Color>,
+        u_thickness: { value: 0.1 } as THREE.IUniform<number>,
+        u_effectStrength: { value: 0.5 } as THREE.IUniform<number>,
+        u_contrast: { value: 1.0 } as THREE.IUniform<number>,
+        u_raymarchSteps: { value: 100 } as THREE.IUniform<number>,
+        u_raymarchEpsilon: { value: 0.001 } as THREE.IUniform<number>,
     },
     // Vertex shader
     vertexShader,
@@ -46,12 +45,18 @@ SDFMaterial.prototype.depthWrite = true;
 SDFMaterial.prototype.depthTest = true;
 
 // Extend R3F with our custom material
-extend({ SDFMaterial });
+extend({ sdfMaterial: SDFMaterial });
 
 // Add the type declaration for our custom element
 declare module '@react-three/fiber' {
     interface ThreeElements {
-        sdfMaterial: ThreeElements['shaderMaterial'] & { uniforms?: { [key: string]: THREE.IUniform<any> } }
+        sdfMaterial: JSX.IntrinsicElements['meshStandardMaterial'] & {
+            uniforms?: { [key: string]: THREE.IUniform<any> };
+            transparent?: boolean;
+            depthWrite?: boolean;
+            depthTest?: boolean;
+            side?: THREE.Side;
+        }
     }
 }
 
@@ -130,7 +135,7 @@ const SDFRenderer = () => {
     }, [size, gl, uniforms]);
 
     // Update time uniform
-    useFrame(({ clock }) => {
+    useFrame(({ clock }: { clock: THREE.Clock }) => {
         if (uniforms.u_time) {
             uniforms.u_time.value = clock.getElapsedTime();
         }
@@ -282,30 +287,23 @@ const RaymarchScene = ({ uniforms }: { uniforms: { [key: string]: THREE.IUniform
         };
     }, [isDragging, previousMouseX, previousMouseY]);
 
-    const handlePointerDown = (event: ThreeEvent<PointerEvent>) => {
-        const target = event.target as HTMLElement;
-        if (target) {
-            target.setPointerCapture(event.pointerId);
-        }
-        setIsDragging(true);
-        setPreviousMouseX(event.clientX);
-        setPreviousMouseY(event.clientY);
-    };
-
-    const handlePointerMove = () => {};
-
-    const handlePointerUp = () => {
-        setIsDragging(false);
-    };
 
     // Create a full-screen quad for raymarching
     return (
         <mesh 
             position={[0, 0, -1]}
-            onPointerDown={handlePointerDown}
-            onPointerMove={handlePointerMove}
-            onPointerUp={handlePointerUp}
-            onPointerLeave={handlePointerUp}
+            onPointerDown={(e: any) => {
+                const event = e.nativeEvent;
+                if (event.target instanceof HTMLElement) {
+                    event.target.setPointerCapture(event.pointerId);
+                }
+                setIsDragging(true);
+                setPreviousMouseX(event.clientX);
+                setPreviousMouseY(event.clientY);
+            }}
+            onPointerMove={() => {}}
+            onPointerUp={() => setIsDragging(false)}
+            onPointerLeave={() => setIsDragging(false)}
         >
             <planeGeometry args={[10, 10]} />
             <primitive object={material} attach="material" />

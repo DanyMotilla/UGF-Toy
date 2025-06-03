@@ -1,17 +1,17 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Editor, { loader } from '@monaco-editor/react';
-import NavBar from './NavBar';
+import NavBar from '@/features/core/components/NavBar';
 import DocPage from './DocPage';
-import type { EditorMode } from './NavBar';
-import { shaderDocs } from './shaderDocs';
+import type { EditorMode } from '@/features/core/components/NavBar';
+import { shaderDocs } from '../content/shaderDocs';
 
 // Import shader files
-import fragmentShader from './shaders/fragment.glsl?raw';
-import vertexShader from './shaders/vertex.glsl?raw';
-import drawingShader from './shaders/drawing/drawing.glsl?raw';
-import colorImplicitShader from './shaders/implicits/colorImplicit.glsl?raw';
-import implicitShader from './shaders/implicits/implicit.glsl?raw';
-import constantsShader from './shaders/utils/constants.glsl?raw';
+import fragmentShader from '@/features/shader-editor/shaders/fragment.glsl?raw';
+import vertexShader from '@/features/shader-editor/shaders/vertex.glsl?raw';
+import drawingShader from '@/features/shader-editor/shaders/drawing/drawing.glsl?raw';
+import colorImplicitShader from '@/features/shader-editor/shaders/implicits/colorImplicit.glsl?raw';
+import implicitShader from '@/features/shader-editor/shaders/implicits/implicit.glsl?raw';
+import constantsShader from '@/features/shader-editor/shaders/utils/constants.glsl?raw';
 
 // Configure Monaco editor for GLSL
 loader.init().then((monaco) => {
@@ -181,7 +181,7 @@ const ShaderEditor: React.FC<ShaderEditorProps> = ({ initialFilePath }) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          path: `src/components/shaders/${currentFile}`,
+          path: `src/features/shader-editor/shaders/${currentFile}`,
           content: content,
         }),
       });

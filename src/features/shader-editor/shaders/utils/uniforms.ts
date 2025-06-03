@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { Controls } from '../../types.ts';
+import { Controls } from '@/features/shader-editor/types/types';
 
 // Uniform types
 interface BaseUniforms {

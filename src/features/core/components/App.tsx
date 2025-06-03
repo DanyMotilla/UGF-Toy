@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import Scene from './components/Scene';
-import YarnLogo from './assets/UGFToy.svg'; // Adjust path to your Yarn/logo SVG
+import { useState, useEffect } from 'react';
+import Scene from '@/features/shader-editor/components/Scene';
+import UGFlogo from '@/assets/UGFToy.svg';
 import './App.css';
 
-const App: React.FC = () => {
+const App = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [isFadingOut, setIsFadingOut] = useState(false);
 
@@ -25,8 +25,8 @@ const App: React.FC = () => {
         return (
             <div className={`splash-screen ${isFadingOut ? 'fade-out' : ''}`}>
                 <img
-                    src={YarnLogo}
-                    alt="Yarn Logo"
+                    src={UGFlogo}
+                    alt="UGF Logo"
                     className="splash-logo"
                 />
             </div>

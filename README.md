@@ -36,7 +36,7 @@ npm run dev
 
 4. Start the code editor server
 ```bash
-node server.js
+cd server && npm run start
 ```
 
 The application will be available at `http://localhost:3333`

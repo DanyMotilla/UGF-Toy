@@ -1,7 +1,6 @@
 #ifndef FRAGMENT_GLSL
 #define FRAGMENT_GLSL
 
-#include "./utils/constants.glsl"
 #include "./drawing/drawing.glsl"
 
 void main() {
@@ -12,7 +11,7 @@ void main() {
         
         // Camera controls with mouse rotation
         float camDist = 2.0;  // Increased distance for better view
-        float camFOV = 2.5;
+        float camFOV = 1.5;
         
         // Convert mouse coordinates to spherical coordinates
         float theta = u_mouse_X;  // Horizontal rotation around Y axis
