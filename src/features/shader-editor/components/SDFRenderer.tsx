@@ -5,8 +5,8 @@ import { useControls } from 'leva';
 import { useGLTF, shaderMaterial, Html, OrbitControls, PerspectiveCamera } from '@react-three/drei';
 import { createUniforms } from '@/features/shader-editor/shaders/utils/uniforms';
 import { createControls } from '@/features/shader-editor/utils/controls';
-import vertexShader from '@/features/shader-editor/shaders/vertex.glsl';
-import fragmentShader from '@/features/shader-editor/shaders/fragment.glsl';
+import vertexShader from '@/features/shader-editor/shaders_modified/test/app/vertex.glsl';
+import fragmentShader from '@/features/shader-editor/shaders_modified/test/app/fragment.glsl';
 
 // Create a custom shader material using @react-three/drei's shaderMaterial
 const SDFMaterial = shaderMaterial(

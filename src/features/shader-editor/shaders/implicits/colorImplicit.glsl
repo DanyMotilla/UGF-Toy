@@ -5,6 +5,7 @@
 // COLOR IMPLICIT CLASS & FUNCTIONS
 //======================================
 
+//-> =================================== ->#KILL# {
 struct ColorImplicit {
     float Distance;
     vec3 Gradient;
@@ -19,22 +20,38 @@ ColorImplicit CreateColorImplicit(Implicit iImplicit, vec4 iColor) {
     return ColorImplicit(iImplicit.Distance, iImplicit.Gradient, iColor);
 }
 
+//-> =================================== ->#KILL# }
 ColorImplicit Negate(ColorImplicit iColorImplicit) {
     return ColorImplicit(-iColorImplicit.Distance, -iColorImplicit.Gradient, iColorImplicit.Color);
 }
 
-ColorImplicit Add(Implicit a, Implicit b, vec4 colorA, vec4 colorB) {
-    Implicit result = Add(a, b);
-    return ColorImplicit(result.Distance, result.Gradient, 0.5 * (colorA + colorB));
+ColorImplicit Add(ColorImplicit a, ColorImplicit b) {
+    float d = min(a.Distance, b.Distance);
+    vec3 g = (d == a.Distance) ? a.Gradient : b.Gradient;
+    vec4 c = (d == a.Distance) ? a.Color : b.Color;
+    return ColorImplicit(d, g, c);
+}
+
+ColorImplicit Add(ColorImplicit a, ColorImplicit b, vec4 colorA, vec4 colorB) {
+    float d = min(a.Distance, b.Distance);
+    vec3 g = (d == a.Distance) ? a.Gradient : b.Gradient;
+    vec4 c = (d == a.Distance) ? colorA : colorB;
+    return ColorImplicit(d, g, c);
 }
 
 ColorImplicit Add(ColorImplicit a, float b) {
     return ColorImplicit(a.Distance + b, a.Gradient, a.Color);
 }
 
-ColorImplicit Subtract(Implicit a, Implicit b, vec4 colorA, vec4 colorB) {
-    Implicit result = Subtract(a, b);
-    return ColorImplicit(result.Distance, result.Gradient, 0.5 * (colorA + colorB));
+Implicit ToImplicit(ColorImplicit a) {
+    return CreateImplicit(a.Distance);
+}
+
+ColorImplicit Subtract(ColorImplicit a, ColorImplicit b) {
+    float d = max(a.Distance, -b.Distance);
+    vec3 g = (d == a.Distance) ? a.Gradient : -b.Gradient;
+    vec4 c = (d == a.Distance) ? a.Color : b.Color;
+    return ColorImplicit(d, g, c);
 }
 
 // Min with color blend
@@ -109,11 +126,11 @@ ColorImplicit RectangleCenterRotatedExp(vec2 p, vec2 center, vec2 size, float an
     return ColorImplicit(result.Distance, result.Gradient, color);
 }
 
-ColorImplicit IntersectionEuclidean(ColorImplicit a, ColorImplicit b, float radius) {
-    float blendingRatio;
-    Implicit result = IntersectionEuclidean(Implicit(a.Distance, a.Gradient), Implicit(b.Distance, b.Gradient), radius, blendingRatio);
-    vec4 blendedColor = mix(a.Color, b.Color, blendingRatio);
-    return ColorImplicit(result.Distance, result.Gradient, blendedColor);
+ColorImplicit Intersection(ColorImplicit a, ColorImplicit b) {
+    float d = max(a.Distance, b.Distance);
+    vec3 g = (d == a.Distance) ? a.Gradient : b.Gradient;
+    vec4 c = (d == a.Distance) ? a.Color : b.Color;
+    return ColorImplicit(d, g, c);
 }
 
 ColorImplicit RectangleUGFSDFCenterRotated(vec2 p, vec2 center, float size, float angle, vec4 color) {

@@ -6,7 +6,7 @@
 //======================================
 // IMPLICIT CLASS & FUNCTIONS
 //======================================
-
+//-> =================================== ->#KILL# {
 struct Implicit {
     float Distance;
     vec3 Gradient;
@@ -20,6 +20,9 @@ Implicit CreateImplicit(float iValue) {
     return Implicit(iValue, vec3(0.0));
 }
 
+//-> =================================== ->#KILL# }
+
+//-> =================================== ->#KILL# {
 Implicit Negate(Implicit v) {
     return Implicit(-v.Distance, -v.Gradient);
 }
@@ -140,7 +143,7 @@ Implicit Conditional(bool condition, Implicit shape1, Implicit shape2) {
         return shape2;
     }
 }
-
+//-> =================================== ->#KILL# }
 Implicit Exp(Implicit iImplicit) {
     float e = exp(iImplicit.Distance);
     return Implicit(e, e * iImplicit.Gradient);
@@ -651,111 +654,5 @@ Implicit createCompoundCut(vec3 p, vec3 center, float slope) {
     );
 }
 
-// Clam Shell SDF
-Implicit clamShellSDF(vec3 p) {
-    // Object controls
-    float objScale = 0.5;
-    vec3 objOffset = vec3(0.0, 0.0, 0.0);
-    vec3 objSize = vec3(1.5, 1.5, 1.5);
-    float chamferDepth = 0.5;
-    float wallThickness = 0.2;
-    float shellBias = 0.0;
-    
-    // Cut controls
-    vec3 cutCenter = vec3(0.0, 0.5, 0.0);  // Center of the cut
-    float cutSlope = 0.5;                   // Slope of the angled section
-    
-    // Apply transformations
-    vec3 pScaled = (p - objOffset) / objScale;  // Scale and position
-    
-    // Box dimensions
-    vec3 boxSize = objSize * 0.5;  // Half-size for centering
-    
-    // Step 1: Create all six planes for a complete box
-    // Top and bottom
-    Implicit topPlane = Plane(pScaled, 
-        vec3(0.0, boxSize.y, 0.0),
-        vec3(0.0, 1.0, 0.0)
-    );
-    Implicit bottomPlane = Plane(pScaled, 
-        vec3(0.0, -boxSize.y, 0.0),
-        vec3(0.0, -1.0, 0.0)
-    );
-    
-    // Left and right
-    Implicit rightPlane = Plane(pScaled,
-        vec3(boxSize.x, 0.0, 0.0),
-        vec3(1.0, 0.0, 0.0)
-    );
-    Implicit leftPlane = Plane(pScaled,
-        vec3(-boxSize.x, 0.0, 0.0),
-        vec3(-1.0, 0.0, 0.0)
-    );
-    
-    // Front and back
-    Implicit frontPlane = Plane(pScaled,
-        vec3(0.0, 0.0, boxSize.z),
-        vec3(0.0, 0.0, 1.0)
-    );
-    Implicit backPlane = Plane(pScaled,
-        vec3(0.0, 0.0, -boxSize.z),
-        vec3(0.0, 0.0, -1.0)
-    );
-    
-    // Step 2: Create chamfered edges by offsetting intersections
-    Implicit topRightEdge = Max(
-        Max(topPlane, rightPlane),
-        Add(
-            Add(topPlane, rightPlane),  // Sum of the two planes
-            CreateImplicit(chamferDepth) // Offset by chamfer depth
-        )
-    );
-    
-    Implicit topFrontEdge = Max(
-        Max(topPlane, frontPlane),
-        Add(
-            Add(topPlane, frontPlane),
-            CreateImplicit(chamferDepth)
-        )
-    );
-    
-    Implicit rightFrontEdge = Max(
-        Max(rightPlane, frontPlane),
-        Add(
-            Add(rightPlane, frontPlane),
-            CreateImplicit(chamferDepth)
-        )
-    );
-    
-    // Step 3: Combine all edges and remaining planes
-    Implicit solidBox = Max(
-        Max(
-            Max(topRightEdge, topFrontEdge),
-            Max(rightFrontEdge, backPlane)
-        ),
-        Max(leftPlane, bottomPlane)
-    );
-    
-    // Step 4: Create hollow box using Shell operation
-    Implicit hollowBox = Shell(solidBox, wallThickness, shellBias);
-    
-    // Step 5: Create compound cutting plane
-    Implicit cutPlane = createCompoundCut(pScaled, cutCenter, cutSlope);
-    
-    // Step 6: Apply cut using Boolean difference
-    Implicit cutBox = Max(hollowBox, Negate(cutPlane));
-    
-    return Sampson(cutBox);
-}
-
-// Tree root
-Implicit map(vec3 p) {
-    #if (STANDALONE==0)
-    float time = u_time;
-    vec2 resolution = u_resolution;
-    #endif
-
-    return clamShellSDF(p);
-}
 
 #endif // IMPLICIT_GLSL

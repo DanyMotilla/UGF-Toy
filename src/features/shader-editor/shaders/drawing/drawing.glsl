@@ -3,6 +3,7 @@
 
 #include "../implicits/implicit.glsl"
 #include "../implicits/colorImplicit.glsl"
+#include "../implicits/modeler.glsl"
 
 //======================================
 // DRAWING FUNCTIONS

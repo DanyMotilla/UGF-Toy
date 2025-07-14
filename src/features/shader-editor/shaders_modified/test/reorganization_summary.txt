@@ -1,0 +1,277 @@
+GLSL Library Reorganization Summary
+==================================================
+
+New File Structure:
+--------------------
+core/math.glsl: 7 functions
+  - AddVec(vec3 v)
+  - Length(vec3 v)
+  - Rotate2D(float theta)
+  - breeze(float x)
+  - breeze4(float t)
+  - Dot(vec3 a, vec3 b)
+  - mix11(float a, float b, float t)
+
+core/transformations.glsl: 7 functions
+  - RotateX(vec3 p, float a)
+  - RotateY(vec3 p, float a)
+  - RotateZ(vec3 p, float a)
+  - RotateZ(float theta)
+  - rotateX(vec3 p, float angle)
+  - rotateY(vec3 p, float angle)
+  - rotate(vec3 p, vec3 r)
+
+sdf/primitives.glsl: 11 functions
+  - sdfBox(vec3 p, vec3 b)
+  - sdfSphere(vec3 p, float r)
+  - sdfTorus(vec3 p, vec2 t)
+  - sdfGyroid(vec3 p, float scale)
+  - sdfWaves(vec3 p, float scale)
+  - Sphere(vec3 p, vec3 center, float radius)
+  - SphereNative(vec3 iP, vec3 iCenter, float iRadius)
+  - Circle(vec2 p, vec2 center, float iRadius)
+  - sdBox(vec3 p, vec3 size, vec4 color)
+  - sdSphere(vec3 p, float r, vec4 color)
+  - sdCylinder(vec3 p, float r, float h, vec4 color)
+
+sdf/operations.glsl: 15 functions
+  - Add(Implicit a, Implicit b)
+  - Add(Implicit a, float b)
+  - Subtract(Implicit a, Implicit b)
+  - Subtract(Implicit a, float b)
+  - Subtract(float a, Implicit b)
+  - Min(Implicit a, Implicit b)
+  - Min(Implicit a, Implicit b, Implicit c)
+  - Min(Implicit a, Implicit b, Implicit c, Implicit d)
+  - Min(Implicit a, float b)
+  - Min(float a, Implicit b)
+  - Max(Implicit a, Implicit b)
+  - Max(Implicit a, Implicit b, Implicit c)
+  - Max(Implicit a, Implicit b, Implicit c, Implicit d)
+  - Max(Implicit a, float b)
+  - Max(float a, Implicit b)
+
+sdf/modifiers.glsl: 12 functions
+  - Abs(Implicit iImplicit)
+  - Negate(Implicit v)
+  - Shell(Implicit iImplicit, float thickness, float bias)
+  - Boundary(Implicit i)
+  - Sampson(Implicit a)
+  - Mod(Implicit iImplicit, Implicit iM)
+  - Mod(Implicit iImplicit, float iM)
+  - TriangleWaveEvenPositive(Implicit param, float period)
+  - indexedLattice(vec3 p, int index, out Implicit solid)
+  - scaledLattice(vec3 scaledP, int index, out Implicit scaledBase)
+  - createCompoundCut(vec3 p, vec3 center, float slope)
+  - Conditional(bool condition, Implicit shape1, Implicit shape2)
+
+sdf/complex.glsl: 13 functions
+  - TPMS_Gyroid(Implicit p_x, Implicit p_y, Implicit p_z, vec3 period, vec3 drop)
+  - BoxCenter(vec3 iP, vec3 iCenter, vec3 iSize)
+  - BoxCenteredSharp(Implicit p_x, Implicit p_y, Implicit p_z, vec3 center, vec3 size)
+  - Rectangle(vec2 p, vec2 min, vec2 max)
+  - RectangleCenterRotated(vec2 p, vec2 center, vec2 size, float angle)
+  - RectangleCentered(vec2 p, vec2 center, vec2 size)
+  - RectangleCenterRotatedExp(vec2 p, vec2 center, vec2 size, float angle)
+  - RectangleUGFSDFCenterRotated(vec2 p, vec2 center, float size, float angle)
+  - LineSegment(vec2 p, vec2 start, vec2 end)
+  - Plane(vec2 p, vec2 origin, vec2 normal)
+  - Plane(vec3 p, vec3 origin, vec3 normal)
+  - PlaneNative(vec2 p, vec2 origin, vec2 normal)
+  - PlaneNative(vec3 p, vec3 origin, vec3 normal)
+
+implicit/types.glsl: 2 functions
+  - CreateImplicit()
+  - CreateImplicit(float iValue)
+
+implicit/basic_ops.glsl: 12 functions
+  - Multiply(Implicit a, float b)
+  - Multiply(Implicit a, Implicit b)
+  - Multiply(float a, Implicit b)
+  - Divide(Implicit a, Implicit b)
+  - Divide(float a, Implicit b)
+  - Divide(Implicit a, float b)
+  - Compare(Implicit iA, Implicit iB)
+  - Compare(Implicit iA, float iB)
+  - Compare(float iA, Implicit iB)
+  - Compare(float iA, float iB)
+  - EuclideanNorm(Implicit a, Implicit b)
+  - EuclideanNorm(Implicit a, Implicit b, Implicit c)
+
+implicit/math_ops.glsl: 13 functions
+  - Sin(Implicit iImplicit)
+  - Cos(Implicit iImplicit)
+  - Tan(Implicit iImplicit)
+  - Asin(Implicit iImplicit)
+  - Acos(Implicit iImplicit)
+  - Atan(Implicit iImplicit)
+  - Atan(Implicit a, Implicit b)
+  - Exp(Implicit iImplicit)
+  - Log(Implicit iImplicit)
+  - Sqrt(Implicit iImplicit)
+  - Pow(Implicit iMantissa, Implicit iExponent)
+  - Square(Implicit v)
+  - Dot(Implicit a_x, Implicit a_y, Implicit a_z, Implicit b_x, Implicit b_y, Implicit b_z)
+
+implicit/blending.glsl: 18 functions
+  - UnionSmooth(Implicit a, Implicit b, float k)
+  - UnionSmoothMedial(Implicit a, Implicit b, float k)
+  - UnionSmoothMedial(Implicit a, Implicit b, float k, out float blendingRatio)
+  - UnionRound(Implicit iA, Implicit iB, float k)
+  - UnionRound(Implicit iA, Implicit iB, float k, out float param)
+  - UnionChamfer(Implicit iA, Implicit iB, float k)
+  - UnionChamfer(Implicit iA, Implicit iB, float k, out float param)
+  - UnionRvachev(Implicit iA, Implicit iB, float k)
+  - UnionEuclidean(Implicit a, Implicit b, Implicit c, float radius)
+  - UnionEuclidean(Implicit a, Implicit b, float radius)
+  - UnionEuclidean(Implicit a, Implicit b, float radius, out float blendingRatio)
+  - IntersectionSmooth(Implicit iA, Implicit iB, float k)
+  - IntersectionSmoothMedial(Implicit iA, Implicit iB, float k)
+  - IntersectionRvachev(Implicit iA, Implicit iB, float k)
+  - IntersectionExponential(Implicit a, Implicit b, float radius)
+  - IntersectionEuclidean(Implicit a, Implicit b, float radius)
+  - IntersectionEuclidean(Implicit a, Implicit b, float radius, out float blendingRatio)
+  - IntersectSharp3(Implicit a, Implicit b, Implicit c)
+
+color/types.glsl: 3 functions
+  - CreateColorImplicit(Implicit iImplicit, vec4 iColor)
+  - CreateColorImplicit(float iValue, vec3 iGradient, vec4 iColor)
+  - ToImplicit(ColorImplicit a)
+
+color/operations.glsl: 11 functions
+  - Add(ColorImplicit a, ColorImplicit b)
+  - Add(ColorImplicit a, ColorImplicit b, vec4 colorA, vec4 colorB)
+  - Add(ColorImplicit a, float b)
+  - Subtract(ColorImplicit a, ColorImplicit b)
+  - Max(ColorImplicit a, ColorImplicit b)
+  - Max(Implicit a, Implicit b, vec4 colorA, vec4 colorB)
+  - Min(ColorImplicit a, ColorImplicit b)
+  - Min(Implicit a, Implicit b, vec4 colorA, vec4 colorB)
+  - Intersection(ColorImplicit a, ColorImplicit b)
+  - Negate(ColorImplicit iColorImplicit)
+  - Atan(ColorImplicit a, ColorImplicit b)
+
+color/mixing.glsl: 4 functions
+  - UnionEuclidean(ColorImplicit a, ColorImplicit b, ColorImplicit c, float radius)
+  - UnionEuclidean(ColorImplicit a, ColorImplicit b, float radius)
+  - UnionSmoothMedial(ColorImplicit a, ColorImplicit b, float k)
+  - TriangleWaveEvenPositive(ColorImplicit param, float period)
+
+color/visualization.glsl: 13 functions
+  - turboImplicit(ColorImplicit a, float range)
+  - colorDerivative(ColorImplicit a, vec4 base)
+  - drawImplicit(ColorImplicit a, vec4 base)
+  - drawLine(ColorImplicit a, vec4 base)
+  - fillImplicit(ColorImplicit a, vec4 base)
+  - strokeImplicit(ColorImplicit a, float width, vec4 base)
+  - LineSegment(vec2 p, vec2 start, vec2 end, vec4 color)
+  - Plane(vec2 p, vec2 origin, vec2 normal, vec4 color)
+  - Plane(vec3 p, vec3 origin, vec3 normal, vec4 color)
+  - Rectangle(vec2 p, vec2 min, vec2 max, vec4 color)
+  - RectangleCenterRotatedExp(vec2 p, vec2 center, vec2 size, float angle, vec4 color)
+  - RectangleCentered(vec2 p, vec2 center, vec2 size, vec4 color)
+  - RectangleUGFSDFCenterRotated(vec2 p, vec2 center, float size, float angle, vec4 color)
+
+render/raymarching.glsl: 7 functions
+  - castRay(vec3 ro, vec3 rd)
+  - getRaymarchDistance(vec3 p)
+  - for(int i=0; i<128; i++)
+  - for(int i=0; i<8; i++)
+  - map(vec3 p)
+  - mapColor(vec3 p)
+  - modelSDF(vec3 p)
+
+render/lighting.glsl: 3 functions
+  - calcNormal(in vec3 pos)
+  - calcOcclusion(in vec3 pos, in vec3 nor)
+  - calcSoftshadow(in vec3 ro, in vec3 rd, float mint, float tmax)
+
+render/effects.glsl: 3 functions
+  - drawArrow(vec2 p, vec2 startPt, vec2 endPt, vec4 color, vec4 base)
+  - DrawVectorField(vec3 p, ColorImplicit iImplicit, float iSpacing, float iLineHalfThick, vec4 iColor)
+  - mapSdf(vec3 p)
+
+app/uniforms.glsl: 2 functions
+  - if(u_mode == 1)
+  - if(u_effectType == 1)
+
+app/modes.glsl: 4 functions
+  - if(hit.distance < MAX_DIST)
+  - if(u_sdfType == 1)
+  - if(u_sdfType == 2)
+  - if(u_sdfType == 3)
+
+Function Dependencies:
+--------------------
+castRay(vec3 ro, vec3 rd) depends on: if, for, mapColor
+if(u_mode == 1) depends on: mapSdf
+if(u_effectType == 1) depends on: mapSdf
+if(u_sdfType == 1) depends on: sdfSphere
+if(u_sdfType == 2) depends on: sdfBox
+if(u_sdfType == 3) depends on: sdfTorus
+mapSdf(vec3 p) depends on: sdfBox, sdfSphere, sdfTorus, if, sdfWaves, sdfGyroid
+Dot(Implicit a_x, Implicit a_y, Implicit a_z, Implicit b_x, Implicit b_y, Implicit b_z) depends on: Multiply, Add
+getRaymarchDistance(vec3 p) depends on: map
+calcNormal(in vec3 pos) depends on: map
+calcSoftshadow(in vec3 ro, in vec3 rd, float mint, float tmax) depends on: getRaymarchDistance, for, if
+for(int i=0; i<128; i++) depends on: getRaymarchDistance, if
+for(int i=0; i<8; i++) depends on: getRaymarchDistance
+calcOcclusion(in vec3 pos, in vec3 nor) depends on: getRaymarchDistance, for
+DrawVectorField(vec3 p, ColorImplicit iImplicit, float iSpacing, float iLineHalfThick, vec4 iColor) depends on: if
+drawImplicit(ColorImplicit a, vec4 base) depends on: strokeImplicit, TriangleWaveEvenPositive
+breeze4(float t) depends on: if
+turboImplicit(ColorImplicit a, float range) depends on: strokeImplicit, breeze4, TriangleWaveEvenPositive
+colorDerivative(ColorImplicit a, vec4 base) depends on: strokeImplicit, TriangleWaveEvenPositive
+drawLine(ColorImplicit a, vec4 base) depends on: strokeImplicit
+drawArrow(vec2 p, vec2 startPt, vec2 endPt, vec4 color, vec4 base) depends on: Shell, if, Rotate2D, strokeImplicit, Plane, Max, fillImplicit
+ToImplicit(ColorImplicit a) depends on: CreateImplicit
+Min(ColorImplicit a, ColorImplicit b) depends on: if
+Min(Implicit a, Implicit b) depends on: if
+Min(Implicit a, float b) depends on: CreateImplicit
+Min(float a, Implicit b) depends on: CreateImplicit
+Max(ColorImplicit a, ColorImplicit b) depends on: if
+Max(Implicit a, Implicit b) depends on: if
+Max(Implicit a, float b) depends on: CreateImplicit
+Max(float a, Implicit b) depends on: CreateImplicit
+LineSegment(vec2 p, vec2 start, vec2 end) depends on: Abs, Max, Subtract, Plane
+RectangleCentered(vec2 p, vec2 center, vec2 size) depends on: if
+Rectangle(vec2 p, vec2 min, vec2 max) depends on: RectangleCentered
+RectangleCenterRotatedExp(vec2 p, vec2 center, vec2 size, float angle) depends on: Abs, Subtract, Add, Rotate2D
+RectangleUGFSDFCenterRotated(vec2 p, vec2 center, float size, float angle) depends on: Subtract, IntersectionEuclidean, Rotate2D, Negate, Plane, Max
+UnionEuclidean(Implicit a, Implicit b, float radius, out float blendingRatio) depends on: Subtract, if, EuclideanNorm, CreateImplicit, Min, Max
+UnionEuclidean(Implicit a, Implicit b, Implicit c, float radius) depends on: Subtract, if, EuclideanNorm, CreateImplicit, Min, Max
+sdBox(vec3 p, vec3 size, vec4 color) depends on: CreateImplicit, CreateColorImplicit
+sdCylinder(vec3 p, float r, float h, vec4 color) depends on: CreateImplicit, CreateColorImplicit
+sdSphere(vec3 p, float r, vec4 color) depends on: CreateImplicit, CreateColorImplicit
+modelSDF(vec3 p) depends on: rotate, Subtract, Add, sdBox, sdCylinder, sdSphere, Intersection
+map(vec3 p) depends on: modelSDF, ToImplicit
+mapColor(vec3 p) depends on: modelSDF
+Square(Implicit v) depends on: Multiply
+Divide(float a, Implicit b) depends on: CreateImplicit
+Compare(Implicit iA, Implicit iB) depends on: CreateImplicit, if
+Compare(Implicit iA, float iB) depends on: CreateImplicit
+Compare(float iA, Implicit iB) depends on: CreateImplicit
+Compare(float iA, float iB) depends on: CreateImplicit
+Conditional(bool condition, Implicit shape1, Implicit shape2) depends on: if
+RectangleCenterRotated(vec2 p, vec2 center, vec2 size, float angle) depends on: if, Rotate2D
+IntersectionExponential(Implicit a, Implicit b, float radius) depends on: Log, Add, Divide, Multiply, Exp
+Shell(Implicit iImplicit, float thickness, float bias) depends on: Abs, Subtract, Add
+EuclideanNorm(Implicit a, Implicit b) depends on: Multiply, Add, Sqrt
+EuclideanNorm(Implicit a, Implicit b, Implicit c) depends on: Multiply, Add, Sqrt
+IntersectionEuclidean(Implicit a, Implicit b, float radius, out float blendingRatio) depends on: Add, if, EuclideanNorm, CreateImplicit, Negate, Min, Max
+BoxCenter(vec3 iP, vec3 iCenter, vec3 iSize) depends on: if
+IntersectSharp3(Implicit a, Implicit b, Implicit c) depends on: Max
+Sphere(vec3 p, vec3 center, float radius) depends on: Length
+BoxCenteredSharp(Implicit p_x, Implicit p_y, Implicit p_z, vec3 center, vec3 size) depends on: Abs, Subtract, IntersectSharp3
+TPMS_Gyroid(Implicit p_x, Implicit p_y, Implicit p_z, vec3 period, vec3 drop) depends on: Divide, AddVec, Multiply, Dot, Sin, Cos
+indexedLattice(vec3 p, int index, out Implicit solid) depends on: Subtract, if, Abs, Sphere, TPMS_Gyroid, Multiply
+scaledLattice(vec3 scaledP, int index, out Implicit scaledBase) depends on: Divide, indexedLattice
+UnionChamfer(Implicit iA, Implicit iB, float k, out float param) depends on: Subtract, Abs, CreateImplicit, Multiply, Min, Max
+UnionRound(Implicit iA, Implicit iB, float k, out float param) depends on: Subtract, Abs, CreateImplicit, Multiply, Min, Max
+UnionSmooth(Implicit a, Implicit b, float k) depends on: UnionSmoothMedial, Add, Min, if
+IntersectionSmoothMedial(Implicit iA, Implicit iB, float k) depends on: Negate, UnionSmoothMedial
+IntersectionSmooth(Implicit iA, Implicit iB, float k) depends on: Negate, UnionSmooth
+UnionRvachev(Implicit iA, Implicit iB, float k) depends on: Subtract, Add, Sqrt, Square
+IntersectionRvachev(Implicit iA, Implicit iB, float k) depends on: UnionRvachev, Negate
+Sampson(Implicit a) depends on: Multiply
+createCompoundCut(vec3 p, vec3 center, float slope) depends on: Max, Plane, Min
