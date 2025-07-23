@@ -115,7 +115,7 @@ Implicit Multiply(Implicit a, Implicit b) {
 
 // From: basic_ops.glsl:9
 Implicit Multiply(Implicit a, float b) {
-    return Multiply(b, a);
+    return Implicit(a.Distance * b, a.Gradient * b);
 }
 
 // From: basic_ops.glsl:19
@@ -245,6 +245,24 @@ Implicit IntersectionEuclidean(Implicit a, Implicit b, float k) {
     float h = clamp(0.5 + 0.5 * (b.Distance - a.Distance) / k, 0.0, 1.0);
     vec3 grad = mix(b.Gradient, a.Gradient, h) - k * h * (1.0 - h) * normalize(b.Gradient - a.Gradient);
     return Implicit(mix(b.Distance, a.Distance, h) + k * h * (1.0 - h), grad);
+}
+
+// Sharp intersection of three implicits
+Implicit IntersectSharp3(Implicit a, Implicit b, Implicit c) {
+    if (a.Distance >= b.Distance && a.Distance >= c.Distance) {
+        return a;
+    } else if (b.Distance >= c.Distance) {
+        return b;
+    } else {
+        return c;
+    }
+}
+
+// 2D rotation matrix
+mat2 Rotate2D(float angle) {
+    float c = cos(angle);
+    float s = sin(angle);
+    return mat2(c, -s, s, c);
 }
 
 #endif // IMPLICIT_OPERATIONS_GLSL

@@ -2,12 +2,8 @@
 #define RENDER_EFFECTS_GLSL
 
 #include "../core/math.glsl"
-#include "../color_implicit/types.glsl"
 #include "../color_implicit/visualization.glsl"
-#include "../implicit/types.glsl"
 #include "../implicit/primitives.glsl"
-#include "../implicit/operations.glsl"
-#include "../implicit/modifiers.glsl"
 
 // From: drawing.glsl:260
 vec4 drawArrow(vec2 p, vec2 startPt, vec2 endPt, vec4 color, vec4 base) {
@@ -61,27 +57,4 @@ vec4 DrawVectorField(vec3 p, ColorImplicit iImplicit, float iSpacing, float iLin
 }
 
 // From: drawing.glsl:42
-vec4 breeze4(float t) {
-    vec3 c0 = vec3(0.0, 0.0, 0.0);
-    vec3 c1 = vec3(0.0, 0.0, 1.0);
-    vec3 c2 = vec3(0.0, 1.0, 1.0);
-    vec3 c3 = vec3(1.0, 1.0, 0.0);
-    vec3 c4 = vec3(1.0, 0.0, 0.0);
-    
-    float x = clamp(t, 0.0, 1.0);
-    vec3 color;
-    
-    if (x < 0.25) {
-        color = mix(c0, c1, x * 4.0);
-    } else if (x < 0.5) {
-        color = mix(c1, c2, (x - 0.25) * 4.0);
-    } else if (x < 0.75) {
-        color = mix(c2, c3, (x - 0.5) * 4.0);
-    } else {
-        color = mix(c3, c4, (x - 0.75) * 4.0);
-    }
-    
-    return vec4(color, 1.0);
-}
-
 #endif // RENDER_EFFECTS_GLSL

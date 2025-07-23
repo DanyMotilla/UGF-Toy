@@ -1,19 +1,27 @@
 #ifndef FRAGMENT_GLSL
 #define FRAGMENT_GLSL
 
-// 1. Base definitions
-#include "uniforms.glsl"
-#include "../core/math.glsl"
+// 1. Base definitions (no dependencies)
 #include "../implicit/types.glsl"
+#include "../core/constants.glsl"
+#include "../core/math.glsl"
+#include "uniforms.glsl"
+
+// 2. Level 1 (depends on base)
+#include "../implicit/operations.glsl"
 #include "../color_implicit/types.glsl"
 
-// 2. Core implementations
+// 3. Level 2 (depends on level 1)
+#include "../implicit/primitives.glsl"
+#include "../render/raymarching.glsl"
+
+// 4. Level 3 (depends on level 2)
+#include "../implicit/modifiers.glsl"
 #include "../color_implicit/visualization.glsl"
 
-// 3. High-level features
+// 5. High-level features
 #include "../implicit/evaluation.glsl"
 #include "../render/camera.glsl"
-#include "../render/raymarching.glsl"
 #include "../render/lighting.glsl"
 #include "../render/effects.glsl"
 

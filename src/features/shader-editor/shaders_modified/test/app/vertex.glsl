@@ -1,11 +1,24 @@
 #ifndef VERTEX_GLSL
 #define VERTEX_GLSL
 
-// 1. Base definitions
-#include "uniforms.glsl"
+// 1. Base definitions (no dependencies)
 #include "../implicit/types.glsl"
+#include "../core/constants.glsl"
+#include "../core/math.glsl"
+#include "uniforms.glsl"
 
-// 2. Core implementation
+// 2. Level 1 (depends on base)
+#include "../implicit/operations.glsl"
+#include "../color_implicit/types.glsl"
+
+// 3. Level 2 (depends on level 1)
+#include "../implicit/primitives.glsl"
+#include "../render/raymarching.glsl"
+
+// 4. Level 3 (depends on level 2)
+#include "../implicit/modifiers.glsl"
+
+// 5. High-level features
 #include "../implicit/evaluation.glsl"
 
 void main() {

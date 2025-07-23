@@ -1,7 +1,6 @@
 #ifndef COLOR_IMPLICIT_VISUALIZATION_GLSL
 #define COLOR_IMPLICIT_VISUALIZATION_GLSL
 
-#include "types.glsl"
 #include "modifiers.glsl"
 
 // visualization.glsl

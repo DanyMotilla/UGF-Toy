@@ -1,3 +1,8 @@
+#ifndef CORE_MATH_GLSL
+#define CORE_MATH_GLSL
+
+#include "constants.glsl"
+
 // Functions: 6 functions
 
 // From: constants.glsl:74
@@ -308,3 +313,6 @@ vec3[256] breezeValues = vec3[](
 vec3 breeze(float x) {
     return breezeValues[int(x * 255.0)];
 }
+
+#endif // CORE_MATH_GLSL
+

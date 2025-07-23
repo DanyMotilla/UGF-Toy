@@ -6,22 +6,8 @@
 // Functions: 11 functions
 
 #include "types.glsl"
+#include "primitives.glsl"
 
-// Uniforms
-uniform float u_bias;
-uniform float u_drop_xy;
-uniform float u_drop_yz;
-uniform float u_drop_zx;
-uniform float u_sdf_thickness;
-uniform float u_size_x;
-uniform float u_size_y;
-uniform float u_size_z;
-
-
-// From: modifiers.glsl:22
-Implicit Abs(Implicit iImplicit) {
-    return Implicit(abs(iImplicit.Distance), sign(iImplicit.Distance) * iImplicit.Gradient);
-}
 
 // From: modifiers.glsl:32
 vec3 Boundary(Implicit i) {
@@ -45,11 +31,6 @@ Implicit Mod(Implicit iImplicit, Implicit iM) {
 // From: modifiers.glsl:47
 Implicit Mod(Implicit iImplicit, float iM) {
     return Implicit(mod(iImplicit.Distance, iM), iImplicit.Gradient);  // TODO: fix gradient
-}
-
-// From: modifiers.glsl:27
-Implicit Negate(Implicit v) {
-    return Implicit(-v.Distance, -v.Gradient);
 }
 
 // From: modifiers.glsl:37

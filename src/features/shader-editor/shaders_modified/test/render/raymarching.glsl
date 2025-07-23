@@ -20,6 +20,19 @@ struct RayHit {
 // Forward declarations
 ColorImplicit mapColor(vec3 p);  // To be implemented by the user
 
+// Sphere SDF
+Implicit Sphere(vec3 p, vec3 center, float radius) {
+    vec3 offset = p - center;
+    float dist = length(offset) - radius;
+    vec3 grad = normalize(offset);
+    return Implicit(dist, grad);
+}
+
+// Get distance for raymarching
+float getRaymarchDistance(vec3 p) {
+    return Sphere(p, vec3(0.0), 0.5).Distance;
+}
+
 // Cast a ray and return hit information
 RayHit castRay(vec3 ro, vec3 rd) {
     float t = 0.0;
@@ -53,3 +66,4 @@ RayHit castRay(vec3 ro, vec3 rd) {
 }
 
 #endif // RENDER_RAYMARCHING_GLSL
+

@@ -6,6 +6,7 @@
 // Functions: 17 functions
 
 #include "types.glsl"
+#include "operations.glsl"
 
 // From: primitives.glsl:17
 Implicit Circle(vec2 p, vec2 center, float iRadius) {
@@ -58,13 +59,20 @@ Implicit BoxCenteredSharp(Implicit p_x, Implicit p_y, Implicit p_z, vec3 center,
     return IntersectSharp3(planes_x, planes_y, planes_z);
 }
 
+// From: complex.glsl:120
+Implicit Plane(vec3 p, vec3 origin, vec3 normal) {
+    vec3 grad = normalize(normal);
+    float v = dot(p - origin, grad);
+    return Implicit(v, grad);
+}
+
 // From: complex.glsl:115
 Implicit Plane(vec2 p, vec2 origin, vec2 normal) {
     return Plane(vec3(p, 0.0), vec3(origin, 0.0), vec3(normal, 0.0));
 }
 
-// From: complex.glsl:120
-Implicit Plane(vec3 p, vec3 origin, vec3 normal) {
+// From: complex.glsl:132
+Implicit PlaneNative(vec3 p, vec3 origin, vec3 normal) {
     vec3 grad = normalize(normal);
     float v = dot(p - origin, grad);
     return Implicit(v, grad);
@@ -73,13 +81,6 @@ Implicit Plane(vec3 p, vec3 origin, vec3 normal) {
 // From: complex.glsl:127
 Implicit PlaneNative(vec2 p, vec2 origin, vec2 normal) {
     return PlaneNative(vec3(p, 0.0), vec3(origin, 0.0), vec3(normal, 0.0));
-}
-
-// From: complex.glsl:132
-Implicit PlaneNative(vec3 p, vec3 origin, vec3 normal) {
-    vec3 grad = normalize(normal);
-    float v = dot(p - origin, grad);
-    return Implicit(v, grad);
 }
 
 // From: complex.glsl:68

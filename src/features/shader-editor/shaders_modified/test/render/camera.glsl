@@ -1,7 +1,7 @@
 #ifndef RENDER_CAMERA_GLSL
 #define RENDER_CAMERA_GLSL
 
-#include "../app/uniforms.glsl"
+
 
 // Camera data structure
 struct Camera {
