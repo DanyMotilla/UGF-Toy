@@ -60,7 +60,7 @@ vec4 handleRaymarchingMode(vec2 fragCoord) {
     // Raymarch
     RayHit hit = castRay(camera.position, rd);
     
-    vec4 col = vec4(0.156862745); // Default background color (Gruvbox dark)
+    vec4 col = vec4(0.156862745, 0.156862745, 0.156862745, 1.0); // Default background color (Gruvbox dark)
     
     // If we hit something
     if(hit.distance < MAX_DIST) {
