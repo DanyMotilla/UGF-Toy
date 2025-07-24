@@ -6,12 +6,37 @@ import type { EditorMode } from '@/features/core/components/NavBar';
 import { shaderDocs } from '../content/shaderDocs';
 
 // Import shader files
-import fragmentShader from '@/features/shader-editor/shaders/fragment.glsl?raw';
-import vertexShader from '@/features/shader-editor/shaders/vertex.glsl?raw';
-import drawingShader from '@/features/shader-editor/shaders/drawing/drawing.glsl?raw';
-import colorImplicitShader from '@/features/shader-editor/shaders/implicits/colorImplicit.glsl?raw';
-import implicitShader from '@/features/shader-editor/shaders/implicits/implicit.glsl?raw';
-import constantsShader from '@/features/shader-editor/shaders/utils/constants.glsl?raw';
+// App shaders
+import fragmentShader from '@/features/shader-editor/shaders_modified/test/app/fragment.glsl?raw';
+import vertexShader from '@/features/shader-editor/shaders_modified/test/app/vertex.glsl?raw';
+import uniformsShader from '@/features/shader-editor/shaders_modified/test/app/uniforms.glsl?raw';
+
+// Core shaders
+import mathShader from '@/features/shader-editor/shaders_modified/test/core/math.glsl?raw';
+import constantsShader from '@/features/shader-editor/shaders_modified/test/core/constants.glsl?raw';
+import transformationsShader from '@/features/shader-editor/shaders_modified/test/core/transformations.glsl?raw';
+
+// Implicit shaders
+import typesShader from '@/features/shader-editor/shaders_modified/test/implicit/types.glsl?raw';
+import operationsShader from '@/features/shader-editor/shaders_modified/test/implicit/operations.glsl?raw';
+import primitivesShader from '@/features/shader-editor/shaders_modified/test/implicit/primitives.glsl?raw';
+import modifiersShader from '@/features/shader-editor/shaders_modified/test/implicit/modifiers.glsl?raw';
+import blendingShader from '@/features/shader-editor/shaders_modified/test/implicit/blending.glsl?raw';
+import evaluationShader from '@/features/shader-editor/shaders_modified/test/implicit/evaluation.glsl?raw';
+
+// Color implicit shaders
+import colorTypesShader from '@/features/shader-editor/shaders_modified/test/color_implicit/types.glsl?raw';
+import colorOperationsShader from '@/features/shader-editor/shaders_modified/test/color_implicit/operations.glsl?raw';
+import colorPrimitivesShader from '@/features/shader-editor/shaders_modified/test/color_implicit/primitives.glsl?raw';
+import colorModifiersShader from '@/features/shader-editor/shaders_modified/test/color_implicit/modifiers.glsl?raw';
+import colorBlendingShader from '@/features/shader-editor/shaders_modified/test/color_implicit/blending.glsl?raw';
+import visualizationShader from '@/features/shader-editor/shaders_modified/test/color_implicit/visualization.glsl?raw';
+
+// Render shaders
+import raymarchingShader from '@/features/shader-editor/shaders_modified/test/render/raymarching.glsl?raw';
+import cameraShader from '@/features/shader-editor/shaders_modified/test/render/camera.glsl?raw';
+import lightingShader from '@/features/shader-editor/shaders_modified/test/render/lighting.glsl?raw';
+import effectsShader from '@/features/shader-editor/shaders_modified/test/render/effects.glsl?raw';
 
 // Configure Monaco editor for GLSL
 loader.init().then((monaco) => {
@@ -134,12 +159,37 @@ interface ShaderFile {
 }
 
 const SHADER_FILES: ShaderFile[] = [
-  { path: 'fragment.glsl', name: 'fragment.glsl', content: fragmentShader },
-  { path: 'vertex.glsl', name: 'vertex.glsl', content: vertexShader },
-  { path: 'drawing/drawing.glsl', name: 'drawing.glsl', content: drawingShader },
-  { path: 'implicits/colorImplicit.glsl', name: 'colorImplicit.glsl', content: colorImplicitShader },
-  { path: 'implicits/implicit.glsl', name: 'implicit.glsl', content: implicitShader },
-  { path: 'utils/constants.glsl', name: 'constants.glsl', content: constantsShader },
+  // App shaders
+  { path: 'app/fragment.glsl', name: 'fragment.glsl', content: fragmentShader },
+  { path: 'app/vertex.glsl', name: 'vertex.glsl', content: vertexShader },
+  { path: 'app/uniforms.glsl', name: 'uniforms.glsl', content: uniformsShader },
+
+  // Core shaders
+  { path: 'core/math.glsl', name: 'math.glsl', content: mathShader },
+  { path: 'core/constants.glsl', name: 'constants.glsl', content: constantsShader },
+  { path: 'core/transformations.glsl', name: 'transformations.glsl', content: transformationsShader },
+
+  // Implicit shaders
+  { path: 'implicit/types.glsl', name: 'types.glsl', content: typesShader },
+  { path: 'implicit/operations.glsl', name: 'operations.glsl', content: operationsShader },
+  { path: 'implicit/primitives.glsl', name: 'primitives.glsl', content: primitivesShader },
+  { path: 'implicit/modifiers.glsl', name: 'modifiers.glsl', content: modifiersShader },
+  { path: 'implicit/blending.glsl', name: 'blending.glsl', content: blendingShader },
+  { path: 'implicit/evaluation.glsl', name: 'evaluation.glsl', content: evaluationShader },
+
+  // Color implicit shaders
+  { path: 'color_implicit/types.glsl', name: 'color_types.glsl', content: colorTypesShader },
+  { path: 'color_implicit/operations.glsl', name: 'color_operations.glsl', content: colorOperationsShader },
+  { path: 'color_implicit/primitives.glsl', name: 'color_primitives.glsl', content: colorPrimitivesShader },
+  { path: 'color_implicit/modifiers.glsl', name: 'color_modifiers.glsl', content: colorModifiersShader },
+  { path: 'color_implicit/blending.glsl', name: 'color_blending.glsl', content: colorBlendingShader },
+  { path: 'color_implicit/visualization.glsl', name: 'visualization.glsl', content: visualizationShader },
+
+  // Render shaders
+  { path: 'render/raymarching.glsl', name: 'raymarching.glsl', content: raymarchingShader },
+  { path: 'render/camera.glsl', name: 'camera.glsl', content: cameraShader },
+  { path: 'render/lighting.glsl', name: 'lighting.glsl', content: lightingShader },
+  { path: 'render/effects.glsl', name: 'effects.glsl', content: effectsShader },
 ];
 
 const ShaderEditor: React.FC<ShaderEditorProps> = ({ initialFilePath }) => {
@@ -181,7 +231,7 @@ const ShaderEditor: React.FC<ShaderEditorProps> = ({ initialFilePath }) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          path: `src/features/shader-editor/shaders/${currentFile}`,
+          path: `src/features/shader-editor/shaders_modified/test/${currentFile}`,
           content: content,
         }),
       });

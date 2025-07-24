@@ -10,8 +10,12 @@ const validateShaderPath = (shaderPath) => {
   const fullPath = path.join(PROJECT_ROOT, shaderPath);
   const normalizedPath = path.normalize(fullPath);
   
-  // Ensure path is within the shaders directory
-  if (!normalizedPath.startsWith(path.join(PROJECT_ROOT, 'src/features/shader-editor/shaders'))) {
+  // Ensure path is within the shaders or shaders_modified directory
+  const validPrefixes = [
+    path.join(PROJECT_ROOT, 'src/features/shader-editor/shaders_modified')
+  ];
+  
+  if (!validPrefixes.some(prefix => normalizedPath.startsWith(prefix))) {
     throw new Error('Invalid shader path');
   }
   
