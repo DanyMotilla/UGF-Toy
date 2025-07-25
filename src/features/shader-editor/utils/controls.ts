@@ -64,7 +64,14 @@ export const createControls = () => {
         raymarchEpsilon: { 
             value: 0.001, min: 0.0001, max: 0.01, step: 0.0001,
             render: (get: any) => get('mode') === 'Raymarching'
-        }
+        },
+
+        // Cutting plane
+        plane_rotX: { value: 0, min: -Math.PI, max: Math.PI },
+        plane_rotY: { value: 0, min: -Math.PI, max: Math.PI },
+        plane_rotZ: { value: 0, min: -Math.PI, max: Math.PI },
+        plane_dist: { value: 0, min: -2, max: 2 }
+        
     } as const;
 
     return controls;

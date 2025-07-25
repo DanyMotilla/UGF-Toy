@@ -42,6 +42,12 @@ uniform float u_raymarchEpsilon;
 uniform float u_count;
 uniform int u_variantIndex;
 
+// Cutting plane uniforms
+uniform float u_plane_rotX;
+uniform float u_plane_rotY;
+uniform float u_plane_rotZ;
+uniform float u_plane_dist;
+
 //======================================
 // VARYINGS
 //======================================

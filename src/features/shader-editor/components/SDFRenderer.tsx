@@ -33,6 +33,11 @@ const SDFMaterial = shaderMaterial(
         u_contrast: { value: 1.0 } as THREE.IUniform<number>,
         u_raymarchSteps: { value: 100 } as THREE.IUniform<number>,
         u_raymarchEpsilon: { value: 0.001 } as THREE.IUniform<number>,
+        // Cutting plane uniforms
+        u_plane_rotX: { value: 0.0 } as THREE.IUniform<number>,
+        u_plane_rotY: { value: 0.0 } as THREE.IUniform<number>,
+        u_plane_rotZ: { value: 0.0 } as THREE.IUniform<number>,
+        u_plane_dist: { value: 0.0 } as THREE.IUniform<number>,
     },
     // Vertex shader
     vertexShader,

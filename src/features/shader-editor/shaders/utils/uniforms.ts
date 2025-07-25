@@ -30,6 +30,10 @@ interface RaymarchUniforms {
     u_mouse_Y: THREE.IUniform<number>;
     u_raymarchSteps: THREE.IUniform<number>;
     u_raymarchEpsilon: THREE.IUniform<number>;
+    u_plane_rotX: THREE.IUniform<number>;
+    u_plane_rotY: THREE.IUniform<number>;
+    u_plane_rotZ: THREE.IUniform<number>;
+    u_plane_dist: THREE.IUniform<number>;
 }
 
 export interface ShaderUniforms extends BaseUniforms, MeshUniforms, RaymarchUniforms {
@@ -60,4 +64,10 @@ export const createUniforms = (controls: Controls, size: { width: number, height
     u_mouse_Y: { value: 0 },
     u_raymarchSteps: { value: controls.raymarchSteps },
     u_raymarchEpsilon: { value: controls.raymarchEpsilon },
+
+    // Cutting plane uniforms
+    u_plane_rotX: { value: controls.plane_rotX },
+    u_plane_rotY: { value: controls.plane_rotY },
+    u_plane_rotZ: { value: controls.plane_rotZ },
+    u_plane_dist: { value: controls.plane_dist },
 });

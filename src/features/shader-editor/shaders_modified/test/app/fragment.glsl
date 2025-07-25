@@ -24,6 +24,7 @@
 #include "../render/camera.glsl"
 #include "../render/lighting.glsl"
 #include "../render/effects.glsl"
+#include "../render/cutting_plane.glsl"
 
 // Drawing mode handler
 vec4 handleDrawingMode(vec2 fragCoord) {
@@ -57,21 +58,54 @@ vec4 handleRaymarchingMode(vec2 fragCoord) {
     // Get ray direction for this pixel
     vec3 rd = getRayDirection(camera, fragCoord);
     
-    // Raymarch
-    RayHit hit = castRay(camera.position, rd);
+    // Default background color (Gruvbox dark)
+    vec4 col = vec4(0.156862745, 0.156862745, 0.156862745, 1.0);
     
-    vec4 col = vec4(0.156862745, 0.156862745, 0.156862745, 1.0); // Default background color (Gruvbox dark)
+    // Cutting plane setup
+    vec3 planeN = getPlaneNormal(u_plane_rotX, u_plane_rotY, u_plane_rotZ);
+    float planeD = u_plane_dist;
+    
+    // Check for plane intersection
+    float t = intersectPlane(camera.position, rd, planeN, planeD);
+    
+    if (t > 0.0) {
+        vec3 p = camera.position + rd * t;
+        
+        // Plane-local basis
+        vec3 u = normalize(cross(planeN, vec3(0.0, 1.0, 0.0)));
+        if (length(u) < 0.01) u = normalize(cross(planeN, vec3(1.0, 0.0, 0.0)));
+        vec3 v = cross(planeN, u);
+        vec2 localPlanePos = vec2(dot(p, u), dot(p, v));
+        
+        // Rectangle bounds
+        vec2 planeBounds = vec2(1.5, 1.0); // half-width and half-height
+        if (abs(localPlanePos.x) <= planeBounds.x && abs(localPlanePos.y) <= planeBounds.y) {
+            // Get field value and visualize with cutting plane
+            ColorImplicit field = mapColor(p);
+            col = getCuttingPlaneColor(p, field);
+        }
+    }
+    
+    // Raymarch for the object
+    RayHit hit = castRay(camera.position, rd);
     
     // If we hit something
     if(hit.distance < MAX_DIST) {
-        col = hit.color;
+        vec4 objectCol = hit.color;
         
         // Basic lighting
         vec3 light = normalize(vec3(1.0, 1.0, 1.0));
         float diff = clamp(dot(hit.normal, light), 0.1, 1.0);
         
         // Apply lighting to RGB components
-        col.rgb *= diff;
+        objectCol.rgb *= diff;
+        
+        // Mix with plane color if it exists
+        if (t > 0.0) {
+            col = mix(col, objectCol, 0.3);
+        } else {
+            col = objectCol;
+        }
     }
     
     return col;
