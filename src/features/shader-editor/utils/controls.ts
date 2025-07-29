@@ -66,12 +66,12 @@ export const createControls = () => {
             render: (get: any) => get('mode') === 'Raymarching'
         },
 
-        // Cutting plane
+        // Cutting plane controls
+        plane_enabled: { value: true },
         plane_rotX: { value: 0, min: -Math.PI, max: Math.PI },
         plane_rotY: { value: 0, min: -Math.PI, max: Math.PI },
         plane_rotZ: { value: 0, min: -Math.PI, max: Math.PI },
-        plane_dist: { value: 0, min: -2, max: 2 }
-        
+        plane_dist: { value: 0, min: -2, max: 2 },      
     } as const;
 
     return controls;

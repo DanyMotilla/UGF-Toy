@@ -65,8 +65,11 @@ vec4 handleRaymarchingMode(vec2 fragCoord) {
     vec3 planeN = getPlaneNormal(u_plane_rotX, u_plane_rotY, u_plane_rotZ);
     float planeD = u_plane_dist;
     
-    // Check for plane intersection
-    float t = intersectPlane(camera.position, rd, planeN, planeD);
+    // Check for plane intersection if enabled
+    float t = -1.0;
+    if (u_plane_enabled) {
+        t = intersectPlane(camera.position, rd, planeN, planeD);
+    }
     
     if (t > 0.0) {
         vec3 p = camera.position + rd * t;

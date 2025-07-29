@@ -43,6 +43,7 @@ uniform float u_count;
 uniform int u_variantIndex;
 
 // Cutting plane uniforms
+uniform bool u_plane_enabled;
 uniform float u_plane_rotX;
 uniform float u_plane_rotY;
 uniform float u_plane_rotZ;

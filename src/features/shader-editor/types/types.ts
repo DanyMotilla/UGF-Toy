@@ -24,6 +24,7 @@ export interface MeshControls {
 export interface RaymarchControls {
     raymarchSteps: number;
     raymarchEpsilon: number;
+    plane_enabled: boolean;
     plane_rotX: number;
     plane_rotY: number;
     plane_rotZ: number;

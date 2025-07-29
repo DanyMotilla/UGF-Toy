@@ -34,6 +34,7 @@ const SDFMaterial = shaderMaterial(
         u_raymarchSteps: { value: 100 } as THREE.IUniform<number>,
         u_raymarchEpsilon: { value: 0.001 } as THREE.IUniform<number>,
         // Cutting plane uniforms
+        u_plane_enabled: { value: true } as THREE.IUniform<boolean>,
         u_plane_rotX: { value: 0.0 } as THREE.IUniform<number>,
         u_plane_rotY: { value: 0.0 } as THREE.IUniform<number>,
         u_plane_rotZ: { value: 0.0 } as THREE.IUniform<number>,
