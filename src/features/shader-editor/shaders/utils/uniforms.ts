@@ -31,6 +31,7 @@ interface RaymarchUniforms {
     u_raymarchSteps: THREE.IUniform<number>;
     u_raymarchEpsilon: THREE.IUniform<number>;
     u_plane_enabled: THREE.IUniform<boolean>;
+    u_true_clipping: THREE.IUniform<boolean>;
     u_plane_rotX: THREE.IUniform<number>;
     u_plane_rotY: THREE.IUniform<number>;
     u_plane_rotZ: THREE.IUniform<number>;
@@ -68,6 +69,7 @@ export const createUniforms = (controls: Controls, size: { width: number, height
 
     // Cutting plane uniforms
     u_plane_enabled: { value: controls.plane_enabled },
+    u_true_clipping: { value: controls.true_clipping },
     u_plane_rotX: { value: controls.plane_rotX },
     u_plane_rotY: { value: controls.plane_rotY },
     u_plane_rotZ: { value: controls.plane_rotZ },

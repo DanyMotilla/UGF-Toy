@@ -25,6 +25,7 @@ export interface RaymarchControls {
     raymarchSteps: number;
     raymarchEpsilon: number;
     plane_enabled: boolean;
+    true_clipping: boolean;
     plane_rotX: number;
     plane_rotY: number;
     plane_rotZ: number;

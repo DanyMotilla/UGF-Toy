@@ -68,6 +68,7 @@ export const createControls = () => {
 
         // Cutting plane controls
         plane_enabled: { value: true },
+        true_clipping: { value: false },  // Default to visualization mode
         plane_rotX: { value: 0, min: -Math.PI, max: Math.PI },
         plane_rotY: { value: 0, min: -Math.PI, max: Math.PI },
         plane_rotZ: { value: 0, min: -Math.PI, max: Math.PI },

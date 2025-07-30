@@ -15,6 +15,10 @@
 #include "../implicit/primitives.glsl"
 #include "../render/raymarching.glsl"
 
+// Clipping features
+#include "../render/cutting_plane.glsl"
+#include "../render/true_clipping.glsl"
+
 // 4. Level 3 (depends on level 2)
 #include "../implicit/modifiers.glsl"
 #include "../color_implicit/visualization.glsl"
@@ -71,7 +75,8 @@ vec4 handleRaymarchingMode(vec2 fragCoord) {
         t = intersectPlane(camera.position, rd, planeN, planeD);
     }
     
-    if (t > 0.0) {
+    // Only check plane intersection if not in true clipping mode
+    if (t > 0.0 && !u_true_clipping) {
         vec3 p = camera.position + rd * t;
         
         // Plane-local basis
@@ -89,25 +94,58 @@ vec4 handleRaymarchingMode(vec2 fragCoord) {
         }
     }
     
-    // Raymarch for the object
-    RayHit hit = castRay(camera.position, rd);
-    
-    // If we hit something
-    if(hit.distance < MAX_DIST) {
-        vec4 objectCol = hit.color;
+    // Choose between normal raymarch and true clipping
+    if (u_true_clipping) {
+        // True clipping raymarch
+        ClipMarchResult clip = clipMarch(camera.position, rd, planeN, planeD);
         
-        // Basic lighting
-        vec3 light = normalize(vec3(1.0, 1.0, 1.0));
-        float diff = clamp(dot(hit.normal, light), 0.1, 1.0);
+        if (clip.Hit) {
+            // Use clipping colors directly without lighting
+            col = clip.Color;
+        }
+    } else {
+        // Normal raymarch
+        RayHit hit = castRay(camera.position, rd);
         
-        // Apply lighting to RGB components
-        objectCol.rgb *= diff;
-        
-        // Mix with plane color if it exists
-        if (t > 0.0) {
-            col = mix(col, objectCol, 0.3);
-        } else {
-            col = objectCol;
+        // If we hit something
+        if(hit.distance < MAX_DIST) {
+            vec4 objectCol = hit.color;
+            
+            // Basic lighting
+            vec3 n = hit.normal;
+            vec3 l = normalize(vec3(1.0, 1.0, 1.0));
+            float diff = max(dot(n, l), 0.0);
+            
+            // Apply lighting
+            col = objectCol * diff;
+            
+            // Always make objects transparent when plane is enabled
+            float objectAlpha = u_plane_enabled ? 0.15 : 1.0;
+            col.a = objectAlpha;
+            
+            // If we hit the plane
+            if (t > 0.0) {
+                vec3 p = camera.position + rd * t;
+                ColorImplicit field = mapColor(p);
+                vec4 planeCol = getCuttingPlaneColor(p, field);
+                
+                // Get field value at plane intersection
+                float fieldValue = abs(field.Distance);
+                float surfaceProximity = smoothstep(0.1, 0.0, fieldValue);
+                
+                // Enhance plane visibility near surface intersections
+                float planeStrength = mix(0.7, 1.0, surfaceProximity);
+                
+                // Always blend with consistent transparency
+                if (t < hit.distance) {
+                    // Plane is in front
+                    col = mix(col, planeCol, planeStrength);
+                } else {
+                    // Object is in front - keep very transparent
+                    col = mix(planeCol, col, 0.15);
+                    col.a = max(0.15, surfaceProximity * 0.5);
+                }
+            }
         }
     }
     

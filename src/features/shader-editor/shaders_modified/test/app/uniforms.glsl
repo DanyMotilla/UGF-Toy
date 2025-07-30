@@ -44,6 +44,7 @@ uniform int u_variantIndex;
 
 // Cutting plane uniforms
 uniform bool u_plane_enabled;
+uniform bool u_true_clipping;  // Toggle between visualization and true clipping
 uniform float u_plane_rotX;
 uniform float u_plane_rotY;
 uniform float u_plane_rotZ;
