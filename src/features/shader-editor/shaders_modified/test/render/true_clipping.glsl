@@ -5,6 +5,7 @@
 #include "../implicit/types.glsl"
 #include "../core/constants.glsl"
 #include "../core/math.glsl"
+#include "../render/cutting_plane.glsl"
 
 // 2. Level 1 (depends on base)
 #include "../implicit/operations.glsl"
@@ -16,13 +17,13 @@
 // 4. Level 3 (depends on level 2)
 #include "../implicit/evaluation.glsl"
 #include "../render/lighting.glsl"
-#include "../render/cutting_plane.glsl"
 
-// Constants for clipping - balanced precision for gyroid
-#define PLANE_SURF_DIST 0.001   // Moderate precision for plane detection
-#define NORMAL_EPS 0.001       // Moderate epsilon for normals
-#define MIN_STEP 0.001         // Standard minimum step
-#define PRECISION_BOOST 0.8    // Moderate step size reduction
+// Constants for clipping
+#define PLANE_SURF_DIST 0.001    // Plane detection threshold
+#define NORMAL_EPS 0.001       // Normal calculation epsilon
+#define MIN_STEP 0.001          // Minimum step size
+#define MAX_STEPS 256           // Maximum raymarching steps
+#define STEP_SCALE 0.68          // Scale factor for steps
 
 // Calculate normal using central differences with dynamic epsilon
 vec3 calcColorNormal(in vec3 pos) {
@@ -103,6 +104,7 @@ ClipMarchResult clipMarch(vec3 ro, vec3 rd, vec3 planeN, float planeD) {
     float lastBeforePlane = 0.0;
     float firstAfterPlane = MAX_DIST;
     bool crossedPlane = false;
+    float lastInside = 0.0;  // Track last point inside the surface
     
     // First determine if we start inside the object
     ColorImplicit startField = mapColor(ro);
@@ -133,46 +135,69 @@ ClipMarchResult clipMarch(vec3 ro, vec3 rd, vec3 planeN, float planeD) {
             } else if (lastBeforePlane > 0.0) {
                 firstAfterPlane = depth;
                 crossedPlane = true;
+                depth += MIN_STEP;
+                continue;
+            }
+        }
+        
+        // Check for surface intersection
+        if (surfaceDist < SURFACE_DIST * 2.0 && beyondPlane) {
+            vec3 p = ro + rd * depth;
+            float d = mapColor(p).Distance;
+            
+            // Multi-point sampling
+            vec3 offsets[8] = vec3[8](
+                vec3(1,1,0), vec3(-1,1,0),
+                vec3(1,-1,0), vec3(-1,-1,0),
+                vec3(0,1,1), vec3(0,-1,1),
+                vec3(1,0,-1), vec3(-1,0,-1)
+            );
+            
+            bool foundSurface = d < 0.0;
+            float minDist = abs(d);
+            
+            // Sample in a small sphere
+            for(int i = 0; i < 8 && !foundSurface; i++) {
+                vec3 sp = p + offsets[i] * MIN_STEP;
+                float sd = mapColor(sp).Distance;
+                if (sd < 0.0) {
+                    foundSurface = true;
+                    p = sp;
+                    d = sd;
+                }
+                minDist = min(minDist, abs(sd));
+            }
+            
+            // Found surface or very close to it
+            if (foundSurface || minDist < SURFACE_DIST * 0.5) {
+                // Binary search refinement
+                vec3 pStart = p - rd * MIN_STEP * 2.0;
+                vec3 pEnd = p + rd * MIN_STEP * 2.0;
                 
-                // When we cross the plane, jump to just beyond it
-                depth = firstAfterPlane + SURFACE_DIST;
-                continue;
+                for(int i = 0; i < 4; i++) {
+                    vec3 pMid = (pStart + pEnd) * 0.5;
+                    float dMid = mapColor(pMid).Distance;
+                    
+                    if (dMid < 0.0) {
+                        pEnd = pMid;
+                        p = pMid;
+                        d = dMid;
+                    } else {
+                        pStart = pMid;
+                    }
+                }
+                
+                if (d < 0.0) {
+                    vec3 normal = getClipNormal(p, true);
+                    vec4 color = getGradientColor(p, true, planeN, planeD);
+                    return ClipMarchResult(length(p - ro), true, true, normal, color);
+                }
             }
         }
         
-        // Check for hit with surface
-        if (surfaceDist < SURFACE_DIST) {
-            // Only show points beyond the cutting plane
-            if (beyondPlane) {
-                vec3 normal = getClipNormal(p, isInside);
-                vec4 color = getGradientColor(p, isInside, planeN, planeD);
-                return ClipMarchResult(depth, true, isInside, normal, color);
-            } else if (!crossedPlane) {
-                // If we haven't crossed the plane yet, keep marching
-                depth += max(MIN_STEP, surfaceDist * PRECISION_BOOST);
-                continue;
-            }
-        }
-        
-        // Adaptive step size calculation
-        float baseStep = surfaceDist * PRECISION_BOOST;
-        
-        // Take much smaller steps when beyond the plane or near surface
-        if (beyondPlane || surfaceDist < SURFACE_DIST * 2.0) {
-            baseStep *= 0.2;  // Even smaller steps for fine details
-        }
-        
-        // Ensure minimum step size
-        baseStep = max(MIN_STEP, baseStep);
-        
-        // Reduce step size near the plane
-        float planeProximity = exp(-abs(planeDist) * 20.0);
-        float maxStep = beyondPlane ? 0.01 : 0.05;
-        
-        // Final step calculation
-        float finalStep = min(baseStep, maxStep);
-        finalStep = mix(finalStep, MIN_STEP, planeProximity);
-        depth += finalStep;
+        // Consistent stepping with minimum guarantee
+        float stepSize = max(MIN_STEP, surfaceDist * STEP_SCALE);
+        depth += stepSize;
         
         if (depth > MAX_DIST) break;
     }
